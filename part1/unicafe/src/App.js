@@ -23,7 +23,6 @@ const Feedback = ({ text, amount }) => {
 const Statistics = ({ good, neutral, bad, total, average, positive }) => {
   return (
     <div>
-      <h2>Statistics</h2>
       <Feedback text={"good"} amount={good} />
       <Feedback text={"neutral"} amount={neutral} />
       <Feedback text={"bad"} amount={bad} />
@@ -84,14 +83,19 @@ const App = () => {
       <Button handleClick={handleGoodClick} text="good" />
       <Button handleClick={handleNeutralClick} text="neutral" />
       <Button handleClick={handleBadClick} text="bad" />
-      <Statistics
-        good={good}
-        neutral={neutral}
-        bad={bad}
-        total={total}
-        average={average}
-        positive={positive}
-      />
+      <h2>Statistics</h2>
+      {total === 0 ? (
+        <div>No feedback given </div>
+      ) : (
+        <Statistics
+          good={good}
+          neutral={neutral}
+          bad={bad}
+          total={total}
+          average={average}
+          positive={positive}
+        />
+      )}
     </div>
   );
 };
