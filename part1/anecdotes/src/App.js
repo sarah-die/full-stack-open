@@ -17,6 +17,16 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  const [points, setPoints] = useState({
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+  });
 
   const getRandomInt = (min, max) => {
     min = Math.ceil(min);
@@ -30,9 +40,17 @@ const App = () => {
     setSelected(temp);
   };
 
+  const handleVoteClick = () => {
+    const copy = { ...points };
+    copy[selected] += 1;
+    setPoints(copy);
+  };
+
   return (
     <div>
       {anecdotes[selected]} <br />
+      <div>This anecdote has {points[selected]} votes.</div>
+      <Button handleClick={handleVoteClick} text={"vote"} />
       <Button handleClick={handleNewAnecdoteClick} text={"random anecdote"} />
     </div>
   );
