@@ -20,8 +20,9 @@ const Content = (props) => {
   );
 };
 
-const Total = (props) => {
-  const sum = props.parts.reduce((acc, obj) => acc + obj.exercises, 0);
+// used destructering here on the props-object
+const Total = ({ parts }) => {
+  const sum = parts.reduce((acc, obj) => acc + obj.exercises, 0);
   return <p>Number of exercises {sum}</p>;
 };
 
