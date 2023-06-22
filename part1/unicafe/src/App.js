@@ -6,9 +6,17 @@ const Button = ({ handleClick, text }) => (
 
 const Feedback = ({ text, amount }) => {
   return (
-    <div>
-      {text}: {amount}
-    </div>
+    <>
+      {text !== "positive" ? (
+        <div>
+          {text}: {amount}
+        </div>
+      ) : (
+        <div>
+          {text}: {amount} %
+        </div>
+      )}
+    </>
   );
 };
 
@@ -17,10 +25,44 @@ const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
   const [bad, setBad] = useState(0);
+  const [total, setTotal] = useState(0);
+  const [average, setAverage] = useState(0);
+  const [positive, setPositive] = useState(0);
 
-  const handleGoodClick = () => setGood(good + 1);
-  const handleNeutralClick = () => setNeutral(neutral + 1);
-  const handleBadClick = () => setBad(bad + 1);
+  const calcPositive = (curGood, curTotal) => {
+    const pos = (curGood / curTotal) * 100;
+    setPositive(pos);
+  };
+
+  const calcAverage = (curGood, curBad, curTotal) => {
+    const ave = (curGood * 1 + curBad * -1) / curTotal;
+    setAverage(ave);
+  };
+
+  const handleGoodClick = () => {
+    const updatedGood = good + 1;
+    setGood(updatedGood);
+    const updatedTotal = updatedGood + neutral + bad;
+    setTotal(updatedTotal);
+    calcPositive(updatedGood, updatedTotal);
+    calcAverage(updatedGood, bad, updatedTotal);
+  };
+  const handleNeutralClick = () => {
+    const updatedNeutral = neutral + 1;
+    setNeutral(updatedNeutral);
+    const updatedTotal = good + updatedNeutral + bad;
+    setTotal(updatedTotal);
+    calcPositive(good, updatedTotal);
+  };
+
+  const handleBadClick = () => {
+    const updatedBad = bad + 1;
+    setBad(updatedBad);
+    const updatedTotal = good + neutral + updatedBad;
+    setTotal(updatedTotal);
+    calcPositive(good, updatedTotal);
+    calcAverage(good, updatedBad, updatedTotal);
+  };
 
   return (
     <div>
@@ -32,6 +74,9 @@ const App = () => {
       <Feedback text={"good"} amount={good} />
       <Feedback text={"neutral"} amount={neutral} />
       <Feedback text={"bad"} amount={bad} />
+      <Feedback text={"all"} amount={total} />
+      <Feedback text={"average"} amount={average} />
+      <Feedback text={"positive"} amount={positive} />
     </div>
   );
 };
