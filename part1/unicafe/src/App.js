@@ -4,16 +4,16 @@ const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}> {text} </button>
 );
 
-const Feedback = ({ text, amount }) => {
+const StatisticLine = ({ text, value }) => {
   return (
     <>
       {text !== "positive" ? (
         <div>
-          {text}: {amount}
+          {text}: {value}
         </div>
       ) : (
         <div>
-          {text}: {amount} %
+          {text}: {value} %
         </div>
       )}
     </>
@@ -23,12 +23,12 @@ const Feedback = ({ text, amount }) => {
 const Statistics = ({ good, neutral, bad, total, average, positive }) => {
   return (
     <div>
-      <Feedback text={"good"} amount={good} />
-      <Feedback text={"neutral"} amount={neutral} />
-      <Feedback text={"bad"} amount={bad} />
-      <Feedback text={"all"} amount={total} />
-      <Feedback text={"average"} amount={average} />
-      <Feedback text={"positive"} amount={positive} />
+      <StatisticLine text={"good"} value={good} />
+      <StatisticLine text={"neutral"} value={neutral} />
+      <StatisticLine text={"bad"} value={bad} />
+      <StatisticLine text={"all"} value={total} />
+      <StatisticLine text={"average"} value={average} />
+      <StatisticLine text={"positive"} value={positive} />
     </div>
   );
 };
