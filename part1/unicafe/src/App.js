@@ -20,6 +20,20 @@ const Feedback = ({ text, amount }) => {
   );
 };
 
+const Statistics = ({ good, neutral, bad, total, average, positive }) => {
+  return (
+    <div>
+      <h2>Statistics</h2>
+      <Feedback text={"good"} amount={good} />
+      <Feedback text={"neutral"} amount={neutral} />
+      <Feedback text={"bad"} amount={bad} />
+      <Feedback text={"all"} amount={total} />
+      <Feedback text={"average"} amount={average} />
+      <Feedback text={"positive"} amount={positive} />
+    </div>
+  );
+};
+
 const App = () => {
   // save clicks of each button to its own state
   const [good, setGood] = useState(0);
@@ -70,13 +84,14 @@ const App = () => {
       <Button handleClick={handleGoodClick} text="good" />
       <Button handleClick={handleNeutralClick} text="neutral" />
       <Button handleClick={handleBadClick} text="bad" />
-      <h2>Statistics</h2>
-      <Feedback text={"good"} amount={good} />
-      <Feedback text={"neutral"} amount={neutral} />
-      <Feedback text={"bad"} amount={bad} />
-      <Feedback text={"all"} amount={total} />
-      <Feedback text={"average"} amount={average} />
-      <Feedback text={"positive"} amount={positive} />
+      <Statistics
+        good={good}
+        neutral={neutral}
+        bad={bad}
+        total={total}
+        average={average}
+        positive={positive}
+      />
     </div>
   );
 };
