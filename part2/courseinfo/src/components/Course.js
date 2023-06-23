@@ -1,12 +1,11 @@
-import {Header} from "./Header";
-import {Content} from "./Content";
+import { Header } from "./Header";
+import { Content } from "./Content";
+import { Total } from "./Total";
 
 export const Course = ({ course }) => (
   <div>
     <Header name={course.name} />
     <Content parts={course.parts} />
-    {/*<Total*/}
-    {/*  sum={course.parts[0].exercises + parts[1].exercises + parts[2].exercises}*/}
-    {/*/>*/}
+    <Total parts={course.parts} />
   </div>
 );
