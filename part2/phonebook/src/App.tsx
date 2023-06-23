@@ -1,7 +1,9 @@
 import { ChangeEventHandler, FormEventHandler, useState } from "react";
+import { Filter } from "./components/Filter";
+import { NewPersonForm } from "./components/NewPersonForm";
+import { Persons } from "./components/Persons";
 
-type Contact = { name: string; number: string; id: number };
-type FormEvent = FormEventHandler<HTMLFormElement>;
+export type Contact = { name: string; number: string; id: number };
 
 const App = () => {
   const [persons, setPersons] = useState<Contact[]>([
@@ -23,7 +25,7 @@ const App = () => {
 
   const checkForDouble = () => persons.some((p) => p.name === newName);
 
-  const addPerson: FormEvent = (event) => {
+  const addPerson: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     if (checkForDouble()) {
       alert(`${newName} is already added to phonebook`);
@@ -55,46 +57,17 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <form>
-        <div>
-          Filter contacts by
-          <input
-            value={filter}
-            onChange={handleFilterChange}
-            name={"filter-input"}
-          />
-        </div>
-      </form>
+      <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>New Contact</h2>
-      <form onSubmit={addPerson} name={"Contact"}>
-        <div>
-          name:{" "}
-          <input
-            value={newName}
-            onChange={handleNameChange}
-            name={"name-input"}
-          />
-        </div>
-        <div>
-          number:{" "}
-          <input
-            value={newNumber}
-            onChange={handleNumberChange}
-            name={"number-input"}
-          />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <NewPersonForm
+        addPerson={addPerson}
+        newName={newName}
+        handleNameChange={handleNameChange}
+        newNumber={newNumber}
+        handleNumberChange={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      {personsToShow.map((person) => {
-        return (
-          <div key={person.name}>
-            {person.name} Nr.: {person.number}
-          </div>
-        );
-      })}
+      <Persons personsToShow={personsToShow} />
     </div>
   );
 };
