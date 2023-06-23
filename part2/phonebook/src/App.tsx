@@ -9,13 +9,19 @@ const App = () => {
   // to control the form input element
   const [newName, setNewName] = useState<string>("");
 
+  const checkForDouble = () => persons.some((p) => p.name === newName);
+
   const addPerson = (event: any) => {
     event.preventDefault();
-    const personObject: Contact = {
-      name: newName,
-      id: persons.length + 1,
-    };
-    setPersons(persons.concat(personObject));
+    if (checkForDouble()) {
+      alert(`${newName} is already added to phonebook`);
+    } else {
+      const personObject: Contact = {
+        name: newName,
+        id: persons.length + 1,
+      };
+      setPersons(persons.concat(personObject));
+    }
     setNewName("");
   };
 
