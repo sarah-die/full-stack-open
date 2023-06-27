@@ -9,7 +9,7 @@ import { NewPersonForm } from "./components/NewPersonForm";
 import { Persons } from "./components/Persons";
 import axios from "axios";
 
-export type Contact = { name: string; number: string; id: number };
+export type Contact = { name: string; number: string };
 
 const App = () => {
   const [persons, setPersons] = useState<Contact[]>([]);
@@ -40,12 +40,16 @@ const App = () => {
       const personObject: Contact = {
         name: newName,
         number: newNumber,
-        id: persons.length + 1,
+        // id: persons.length + 1,
       };
-      setPersons(persons.concat(personObject));
+      axios
+        .post("http://localhost:3001/persons", personObject)
+        .then((response) => {
+          setPersons(persons.concat(response.data));
+          setNewName("");
+          setNewNumber("");
+        });
     }
-    setNewName("");
-    setNewNumber("");
   };
 
   const handleNameChange: ChangeEventHandler<HTMLInputElement> = (event) => {
