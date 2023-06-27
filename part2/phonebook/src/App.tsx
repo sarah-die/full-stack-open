@@ -7,9 +7,9 @@ import {
 import { Filter } from "./components/Filter";
 import { NewPersonForm } from "./components/NewPersonForm";
 import { Persons } from "./components/Persons";
-import axios from "axios";
+import personService from "./services/persons";
 
-export type Contact = { name: string; number: string };
+export type Contact = { name: string; number: string; id?: number };
 
 const App = () => {
   const [persons, setPersons] = useState<Contact[]>([]);
@@ -22,13 +22,10 @@ const App = () => {
 
   // useEffect to fetch data from json server
   useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
+    personService.getAll().then((initialPersons) => {
+      setPersons(initialPersons);
     });
   }, []);
-  console.log("render", persons.length, "persons");
 
   const checkForDouble = () => persons.some((p) => p.name === newName);
 
@@ -42,13 +39,11 @@ const App = () => {
         number: newNumber,
         // id: persons.length + 1,
       };
-      axios
-        .post("http://localhost:3001/persons", personObject)
-        .then((response) => {
-          setPersons(persons.concat(response.data));
-          setNewName("");
-          setNewNumber("");
-        });
+      personService.create(personObject).then((returnedPerson) => {
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
     }
   };
 

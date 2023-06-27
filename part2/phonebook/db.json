@@ -24,6 +24,11 @@
       "name": "sarah",
       "number": "12345",
       "id": 5
+    },
+    {
+      "name": "bernd",
+      "number": "987654",
+      "id": 6
     }
   ]
 }
