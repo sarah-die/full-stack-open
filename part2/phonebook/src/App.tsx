@@ -9,7 +9,8 @@ import { NewPersonForm } from "./components/NewPersonForm";
 import { Persons } from "./components/Persons";
 import personService from "./services/persons";
 
-export type Contact = { name: string; number: string; id?: number };
+export type Contact = { name: string; number: string; id: number };
+export type PostEntity<T> = Omit<T, "id">;
 
 const App = () => {
   const [persons, setPersons] = useState<Contact[]>([]);
@@ -23,6 +24,7 @@ const App = () => {
   // useEffect to fetch data from json server
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
+      console.log(initialPersons);
       setPersons(initialPersons);
     });
   }, []);
@@ -34,7 +36,7 @@ const App = () => {
     if (checkForDouble()) {
       alert(`${newName} is already added to phonebook`);
     } else {
-      const personObject: Contact = {
+      const personObject: PostEntity<Contact> = {
         name: newName,
         number: newNumber,
         // id: persons.length + 1,
@@ -60,6 +62,12 @@ const App = () => {
     setFilter(event.target.value);
   };
 
+  const deletePerson = (id: number) => () => {
+    window.confirm(`delete ${persons.find((p: Contact) => p.id === id)!.name}`);
+    personService.deletePerson(id);
+    setPersons(persons.filter((p) => p.id !== id));
+  };
+
   const personsToShow: Contact[] = showAll
     ? persons
     : persons.filter((person) => person.name.toLowerCase().includes(filter));
@@ -77,7 +85,7 @@ const App = () => {
         handleNumberChange={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow} />
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson} />
     </div>
   );
 };
