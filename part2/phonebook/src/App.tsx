@@ -1,17 +1,18 @@
-import { ChangeEventHandler, FormEventHandler, useState } from "react";
+import {
+  ChangeEventHandler,
+  FormEventHandler,
+  useEffect,
+  useState,
+} from "react";
 import { Filter } from "./components/Filter";
 import { NewPersonForm } from "./components/NewPersonForm";
 import { Persons } from "./components/Persons";
+import axios from "axios";
 
 export type Contact = { name: string; number: string; id: number };
 
 const App = () => {
-  const [persons, setPersons] = useState<Contact[]>([
-    { name: "Arto Hellas", number: "040-123456", id: 1 },
-    { name: "Ada Lovelace", number: "39-44-5323523", id: 2 },
-    { name: "Dan Abramov", number: "12-43-234345", id: 3 },
-    { name: "Mary Poppendieck", number: "39-23-6423122", id: 4 },
-  ]);
+  const [persons, setPersons] = useState<Contact[]>([]);
   // to control the form input element
   const [newName, setNewName] = useState<string>("");
   const [newNumber, setNewNumber] = useState<string>("");
@@ -19,9 +20,15 @@ const App = () => {
   const [showAll, setShowAll] = useState<Boolean>(true);
   const [filter, setFilter] = useState<string>("");
 
-  const personsToShow: Contact[] = showAll
-    ? persons
-    : persons.filter((person) => person.name.toLowerCase().includes(filter));
+  // useEffect to fetch data from json server
+  useEffect(() => {
+    console.log("effect");
+    axios.get("http://localhost:3001/persons").then((response) => {
+      console.log("promise fulfilled");
+      setPersons(response.data);
+    });
+  }, []);
+  console.log("render", persons.length, "persons");
 
   const checkForDouble = () => persons.some((p) => p.name === newName);
 
@@ -53,6 +60,10 @@ const App = () => {
     event.target.value === "" ? setShowAll(true) : setShowAll(false);
     setFilter(event.target.value);
   };
+
+  const personsToShow: Contact[] = showAll
+    ? persons
+    : persons.filter((person) => person.name.toLowerCase().includes(filter));
 
   return (
     <div>
