@@ -24,17 +24,31 @@ const App = () => {
   // useEffect to fetch data from json server
   useEffect(() => {
     personService.getAll().then((initialPersons) => {
-      console.log(initialPersons);
       setPersons(initialPersons);
     });
   }, []);
 
   const checkForDouble = () => persons.some((p) => p.name === newName);
 
+  const updateNumber = () => {
+    const person: Contact = persons.find((p) => p.name === newName)!;
+    const id: number = person.id;
+    const updatedPerson: Contact = { ...person, number: newNumber };
+    personService.update(id, updatedPerson).then((returnedPerson) => {
+      setPersons(persons.map((p) => (p.id !== id ? p : returnedPerson)));
+    });
+  };
+
   const addPerson: FormEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault();
     if (checkForDouble()) {
-      alert(`${newName} is already added to phonebook`);
+      if (
+        window.confirm(
+          `${newName} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        updateNumber();
+      }
     } else {
       const personObject: PostEntity<Contact> = {
         name: newName,
@@ -43,10 +57,10 @@ const App = () => {
       };
       personService.create(personObject).then((returnedPerson) => {
         setPersons(persons.concat(returnedPerson));
-        setNewName("");
-        setNewNumber("");
       });
     }
+    setNewName("");
+    setNewNumber("");
   };
 
   const handleNameChange: ChangeEventHandler<HTMLInputElement> = (event) => {

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from "axios";
-import {Contact, PostEntity} from "../App";
+import { Contact, PostEntity } from "../App";
 const baseURL = "http://localhost:3001/persons";
 
 const getAll = () => {
@@ -17,4 +17,9 @@ const deletePerson = (id: number) => {
   return request.then((response) => response);
 };
 
-export default { getAll, create, deletePerson };
+const update = (id: number, updatedPerson: Contact) => {
+  const request = axios.put(`${baseURL}/${id}`, updatedPerson);
+  return request.then((response) => response.data);
+};
+
+export default { getAll, create, deletePerson, update };
