@@ -1,9 +1,12 @@
-const Notification = (props: { message: string }) => {
+const Notification = (props: { message: string; messageType: string }) => {
   if (props.message === "") {
     return null;
   }
-
-  return <div className="success">{props.message}</div>;
+  if (props.messageType === "success") {
+    return <div className="success">{props.message}</div>;
+  } else {
+    return <div className="error">{props.message}</div>;
+  }
 };
 
 export default Notification;

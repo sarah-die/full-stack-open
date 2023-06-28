@@ -22,9 +22,10 @@ const App = () => {
   const [showAll, setShowAll] = useState<Boolean>(true);
   const [filter, setFilter] = useState<string>("");
 
-  const [successMessage, setSuccessMessage] = useState<string>(
+  const [userInformation, setUserInformation] = useState<string>(
     "User Information are displayed here"
   );
+  const [messageType, setMessageType] = useState<string>("success");
 
   // useEffect to fetch data from json server
   useEffect(() => {
@@ -43,12 +44,21 @@ const App = () => {
       .update(id, updatedPerson)
       .then((returnedPerson) => {
         setPersons(persons.map((p) => (p.id !== id ? p : returnedPerson)));
-      })
-      .finally(() => {
-        setSuccessMessage(`Person ${person.name} succesful updated.`);
+        setMessageType("success");
+        setUserInformation(`Person ${person.name} succesful updated.`);
         setTimeout(() => {
-          setSuccessMessage("");
+          setUserInformation("");
         }, 5000);
+      })
+      .catch((error) => {
+        setMessageType("error");
+        setUserInformation(
+          `The person '${person.name}' was already deleted from server.`
+        );
+        setTimeout(() => {
+          setUserInformation("");
+        }, 5000);
+        setPersons(persons.filter((p) => p.id !== id));
       });
   };
 
@@ -72,11 +82,19 @@ const App = () => {
         .create(personObject)
         .then((returnedPerson) => {
           setPersons(persons.concat(returnedPerson));
-        })
-        .finally(() => {
-          setSuccessMessage(`Person ${newName} succesful added.`);
+          setMessageType("success");
+          setUserInformation(`Person ${newName} succesful added.`);
           setTimeout(() => {
-            setSuccessMessage("");
+            setUserInformation("");
+          }, 5000);
+        })
+        .catch((error) => {
+          setMessageType("error");
+          setUserInformation(
+            `An error happend while creating '${newName}'. Please try again.`
+          );
+          setTimeout(() => {
+            setUserInformation("");
           }, 5000);
         });
     }
@@ -99,16 +117,31 @@ const App = () => {
 
   const deletePerson = (id: number) => () => {
     window.confirm(`delete ${persons.find((p: Contact) => p.id === id)!.name}`);
-    personService.deletePerson(id).finally(() => {
-      setSuccessMessage(
-        `Person ${
-          persons.find((p: Contact) => p.id === id)!.name
-        } succesful deleted.`
-      );
-      setTimeout(() => {
-        setSuccessMessage("");
-      }, 5000);
-    });
+    personService
+      .deletePerson(id)
+      .then(() => {
+        setMessageType("success");
+        setUserInformation(
+          `Person ${
+            persons.find((p: Contact) => p.id === id)!.name
+          } succesful deleted.`
+        );
+        setTimeout(() => {
+          setUserInformation("");
+        }, 5000);
+      })
+      .catch((error) => {
+        setMessageType("error");
+        setUserInformation(
+          `The person ${
+            persons.find((p: Contact) => p.id === id)!.name
+          } was already deleted from server.`
+        );
+        setTimeout(() => {
+          setUserInformation("");
+        }, 5000);
+        setPersons(persons.filter((p) => p.id !== id));
+      });
     setPersons(persons.filter((p) => p.id !== id));
   };
 
@@ -119,7 +152,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <Notification message={successMessage} />
+      <Notification message={userInformation} messageType={messageType} />
       <Filter filter={filter} handleFilterChange={handleFilterChange} />
       <h2>New Contact</h2>
       <NewPersonForm
