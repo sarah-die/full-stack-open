@@ -10,7 +10,7 @@ const getAllNames = () => {
 };
 
 const getCountry = (country: string) => {
-  const request = axios.get(`${baseURL}/api/name/${country}`);
+  const request = axios.get(`${baseURL}api/name/${country}`);
   return request.then((response: AxiosResponse) => response.data);
 };
 

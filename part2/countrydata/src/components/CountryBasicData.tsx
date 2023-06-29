@@ -14,7 +14,11 @@ export const CountryBasicData = (props: { country: Country }) => {
           })}
         </ul>
       </div>
-      <img src={props.country.flags.png} alt={props.country.flags.alt} />
+      <img
+        style={{ border: "solid", borderWidth: 1, borderColor: "grey" }}
+        src={props.country.flags.png}
+        alt={props.country.flags.alt}
+      />
     </div>
   );
 };
