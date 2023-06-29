@@ -47,6 +47,12 @@ function App() {
     setFilteredCountries(filtered);
   };
 
+  const showCountry = (country: string) => () => {
+    setFilter(country);
+    setFilteredCountries([country]);
+    // ToDo: better handleFilterChange?
+  };
+
   return (
     <div>
       <CountryFilter filter={filter} handleFilterChange={handleFilterChange} />
@@ -54,7 +60,11 @@ function App() {
       filteredCountries[0] === singleCountry.name.common ? (
         <CountryBasicData country={singleCountry} />
       ) : (
-        <Countries filter={filter} filteredCountries={filteredCountries} />
+        <Countries
+          filter={filter}
+          filteredCountries={filteredCountries}
+          showCountry={showCountry}
+        />
       )}
     </div>
   );
