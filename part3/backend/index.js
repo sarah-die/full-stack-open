@@ -4,6 +4,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 app.use(cors());
+app.use(express.static("build"));
 
 // http-method: createServer
 // event-handler is registered that is called everytime an HTTP request is made to the address
