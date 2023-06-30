@@ -1,7 +1,9 @@
 const http = require("http");
 // import http from "http"
 const express = require("express");
+const cors = require("cors");
 const app = express();
+app.use(cors());
 
 // http-method: createServer
 // event-handler is registered that is called everytime an HTTP request is made to the address
@@ -100,7 +102,7 @@ app.post("/api/notes", (request, response) => {
 });
 
 // listens to HTTP requests sent to prt 3001
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
