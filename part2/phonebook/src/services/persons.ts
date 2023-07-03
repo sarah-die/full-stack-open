@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { Contact, PostEntity } from "../App";
-const baseURL = "http://localhost:3001/persons";
-
+// const baseURL = "http://localhost:3001/persons";
+const baseURL = "http://localhost:3001/api/persons";
 const getAll = () => {
   const request = axios.get(baseURL);
   return request.then((response: AxiosResponse) => response.data);
