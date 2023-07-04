@@ -1,18 +1,15 @@
-const http = require("http");
-// import http from "http"
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
-app.use(cors());
-app.use(express.static("build"));
+// import Note from "./models/note"
+const Note = require("./models/note");
 
-// http-method: createServer
-// event-handler is registered that is called everytime an HTTP request is made to the address
-// statuscode: 200, contentType: text/plain
-// const app = http.createServer((request, response) => {
-//     response.writeHead(200, { 'Content-Type': 'text/plain' })
-//     response.end('Hello World')
-// })
+app.use(cors());
+// sending data in body in JSON format
+// json-parser
+app.use(express.json());
+app.use(express.static("build"));
 
 // now main purpose: offer raw data in JSON format
 let notes = [
@@ -33,9 +30,8 @@ let notes = [
   },
 ];
 
-// define new routes
 // defines an event handler that is used to handle HTTP GET request to root /
-// event handler accepts to params
+// event handler accepts two params
 // request = contains all HTTP request infos
 // response = defines how request is responded
 app.get("/", (request, response) => {
@@ -45,21 +41,17 @@ app.get("/", (request, response) => {
 // event handler that handles HTTP GET request to /notes path
 // reponse = json-method
 app.get("/api/notes", (request, response) => {
-  response.json(notes);
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 
 // route for fetching a single resource
 // parametric route with :-syntax
 app.get("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const note = notes.find((note) => note.id === id);
-
-  // when there is no note the variable is set to undefined and the response is 200
-  if (note) {
+  Note.findById(request.params.id).then((note) => {
     response.json(note);
-  } else {
-    response.status(404).end();
-  }
+  });
 });
 
 // deleting resources
@@ -70,40 +62,24 @@ app.delete("/api/notes/:id", (request, response) => {
   response.status(204).end();
 });
 
-// adding new notes -> HTTP POST request
-// sending data in body in JSON format
-// json-parser
-app.use(express.json());
-
-// event-handler can access data from the body property of the request
-// json-parser: takes request json-data, transforms it into js and attaches it to the body
-// property of the request object before the route handler is called
-const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
-  return maxId + 1;
-};
-
+// with mongoDB
 app.post("/api/notes", (request, response) => {
   const body = request.body;
-
-  if (!body.content) {
-    return response.status(400).json({
-      error: "content missing",
-    });
+  if (body.content === undefined) {
+    return response.status(400).json({ error: "content missing" });
   }
-
-  const note = {
+  const note = new Note({
     content: body.content,
-    important: body.important || false,
-    id: generateId(),
-  };
-
-  notes = notes.concat(note);
-  response.json(note);
+    important: body.important ?? false, // better when default value should be changed to true
+  });
+  note.save().then((savedNote) => {
+    // use toJSON noteSchema here -> note.js line 27
+    response.json(savedNote);
+  });
 });
 
-// listens to HTTP requests sent to prt 3001
-const PORT = process.env.PORT || 3001;
+// listens to HTTP requests sent to port 3001 (see .env)
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
