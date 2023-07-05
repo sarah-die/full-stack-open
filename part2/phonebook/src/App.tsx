@@ -91,7 +91,7 @@ const App = () => {
         .catch((error) => {
           setMessageType("error");
           setUserInformation(
-            `An error happend while creating '${newName}'. Please try again.`
+            `An error happend while creating '${newName}': ${error.response.data.error}.`
           );
           setTimeout(() => {
             setUserInformation("");
