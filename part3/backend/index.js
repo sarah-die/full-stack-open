@@ -51,7 +51,7 @@ app.get("/api/notes", (request, response) => {
 
 // route for fetching a single resource
 // parametric route with :-syntax
-app.get("/api/notes/:id", (request, response) => {
+app.get("/api/notes/:id", (request, response, next) => {
   Note.findById(request.params.id)
     .then((note) => {
       if (note) {
@@ -82,13 +82,16 @@ app.delete("/api/notes/:id", (request, response, next) => {
 // with mongoDB
 app.post("/api/notes", (request, response) => {
   const body = request.body;
+
   if (body.content === undefined) {
     return response.status(400).json({ error: "content missing" });
   }
+
   const note = new Note({
     content: body.content,
-    important: body.important ?? false, // better when default value should be changed to true
+    important: body.important ?? false, // ?? better when default value should be changed to true
   });
+
   note.save().then((savedNote) => {
     // use toJSON noteSchema here -> note.js line 27
     response.json(savedNote);
