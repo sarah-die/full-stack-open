@@ -1,34 +1,37 @@
-require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const app = express();
+const cors = require("cors");
+require("dotenv").config();
+
 // import Note from "./models/note"
 const Note = require("./models/note");
 
-app.use(cors());
+const requestLogger = (request, response, next) => {
+  console.log("Method:", request.method);
+  console.log("Path:  ", request.path);
+  console.log("Body:  ", request.body);
+  console.log("---");
+  next();
+};
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message);
+  if (error.name === "CastError") {
+    return response.status(400).send({ error: "malformatted id" });
+  }
+  next(error);
+};
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: "unknown endpoint" });
+};
+
 // sending data in body in JSON format
 // json-parser
-app.use(express.json());
 app.use(express.static("build"));
-
-// now main purpose: offer raw data in JSON format
-let notes = [
-  {
-    id: 1,
-    content: "HTML is easy",
-    important: true,
-  },
-  {
-    id: 2,
-    content: "Browser can execute only JavaScript",
-    important: false,
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true,
-  },
-];
+app.use(express.json());
+app.use(requestLogger);
+app.use(cors());
 
 // defines an event handler that is used to handle HTTP GET request to root /
 // event handler accepts two params
@@ -39,7 +42,7 @@ app.get("/", (request, response) => {
 });
 
 // event handler that handles HTTP GET request to /notes path
-// reponse = json-method
+// response = json-method
 app.get("/api/notes", (request, response) => {
   Note.find({}).then((notes) => {
     response.json(notes);
@@ -49,17 +52,31 @@ app.get("/api/notes", (request, response) => {
 // route for fetching a single resource
 // parametric route with :-syntax
 app.get("/api/notes/:id", (request, response) => {
-  Note.findById(request.params.id).then((note) => {
-    response.json(note);
-  });
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (note) {
+        response.json(note);
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      // console.log(error); // log the error!
+      // response.status(400).send({ error: "malformatted id" });
+      // remember: next() is the third parameter from middleware function
+      // -> next with no parameter = execution moves on to next route or middleware
+      // -> next with parameter = continue to error handler middleware
+      next(error);
+    });
 });
 
-// deleting resources
-app.delete("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  notes = notes.filter((note) => note.id !== id);
-
-  response.status(204).end();
+// deleting resources with mongoDB
+app.delete("/api/notes/:id", (request, response, next) => {
+  Note.findByIdAndRemove(request.params.id)
+    .then((result) => {
+      response.status(204).end();
+    })
+    .catch((error) => next(error));
 });
 
 // with mongoDB
@@ -77,6 +94,28 @@ app.post("/api/notes", (request, response) => {
     response.json(savedNote);
   });
 });
+
+// update data
+app.put("/api/notes/:id", (request, response, next) => {
+  const body = request.body;
+  const note = {
+    content: body.content,
+    important: body.important,
+  };
+  // findByAndUpdate receives a regular JS object, not a new Note object
+  // imp! by default the updatesNote parameter receives the original document without modifications
+  // { new: true } = event handler will be called with new modified document
+  Note.findByIdAndUpdate(request.params.id, note, { new: true })
+    .then((updatedNote) => {
+      response.json(updatedNote);
+    })
+    .catch((error) => next(error));
+});
+
+// handler of requests with unknown endpoint imp! place it always here
+app.use(unknownEndpoint);
+// imp! this has to be the last loaded middleware
+app.use(errorHandler);
 
 // listens to HTTP requests sent to port 3001 (see .env)
 const PORT = process.env.PORT;
