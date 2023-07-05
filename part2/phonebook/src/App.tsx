@@ -53,12 +53,11 @@ const App = () => {
       .catch((error) => {
         setMessageType("error");
         setUserInformation(
-          `The person '${person.name}' was already deleted from server.`
+          `An error happend while updating '${newName}': ${error.response.data.error}.`
         );
         setTimeout(() => {
           setUserInformation("");
         }, 5000);
-        setPersons(persons.filter((p) => p.id !== id));
       });
   };
 
