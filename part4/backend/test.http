@@ -1,0 +1,14 @@
+GET http://localhost:3001/api/notes
+Accept: application/json
+
+###
+DELETE http://localhost:3001/api/notes/2
+
+###
+POST http://localhost:3001/api/notes
+Content-Type: application/json
+
+{
+  "content": "Postman is good in testing backend",
+  "important": true
+}
