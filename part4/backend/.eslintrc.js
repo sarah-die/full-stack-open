@@ -36,7 +36,7 @@ module.exports = {
     ],
     'semi': [
       'error',
-      'never'
+      'always'
     ],
     'eqeqeq': 'error',
     'no-trailing-spaces': 'error',
@@ -48,4 +48,4 @@ module.exports = {
     ],
     'no-console': 0
   }
-}
+};
