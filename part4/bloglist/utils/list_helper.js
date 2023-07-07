@@ -11,11 +11,14 @@ const favoriteBlog = (blogs) => {
   if (blogs.length === 0) {
     return null;
   } else {
-    const max = blogs.reduce((max, cur) => {
-      return max.likes > cur.likes ? max : cur;
-    }, -1);
+    const max = blogs.reduce(
+      (max, cur) => {
+        return max.likes > cur.likes ? max : cur;
+      },
+      { likes: -1 }
+    );
     return { title: max.title, author: max.author, likes: max.likes };
   }
 };
 
-module.exports = { dummy, totalLikes, favoriteBlog };
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs };
