@@ -120,6 +120,26 @@ describe('deleting a blog', () => {
   });
 });
 
+describe('blogs can be edited', () => {
+  test('likes from blog are updated', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+
+    blogToUpdate.likes = 50;
+
+    await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(blogToUpdate)
+      .expect(200);
+
+    const blogsAtEnd = await helper.blogsInDb();
+
+    const updatedBlog = blogsAtEnd.find((b) => b.id === blogToUpdate.id);
+
+    expect(updatedBlog.likes).toEqual(blogToUpdate.likes);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
