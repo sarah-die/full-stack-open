@@ -72,6 +72,34 @@ test('if likes property is missing from the request, it wil default to value 0',
   expect(blogsAtEnd[blogsAtEnd.length - 1].likes).toBe(0);
 });
 
+// 4.12*
+describe('creating new blogs', () => {
+  const missingTitle = {
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
+    likes: 0,
+  };
+
+  const missingUrl = {
+    title: 'Type wars',
+    author: 'Robert C. Martin',
+    likes: 2,
+  };
+
+  test('does the backend respond with status 400 when title is missing', async () => {
+    const response = await api
+      .post('/api/blogs')
+      .send(missingTitle)
+      .expect(400);
+    console.log('title', response.status, 'text', response.text);
+  });
+
+  test('does the backend respond with status 400 when url is missing', async () => {
+    const response = await api.post('/api/blogs').send(missingUrl).expect(400);
+    console.log('url', response.status, 'text', response.text);
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });
