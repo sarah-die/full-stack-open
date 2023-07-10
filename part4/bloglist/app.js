@@ -8,10 +8,10 @@ const logger = require('./utils/logger');
 const mongoose = require('mongoose');
 mongoose.set('strictQuery', false);
 
-logger.info('connecting to', config.mongoUrl);
+logger.info('connecting to', config.MONGODB_URI);
 
 mongoose
-  .connect(config.mongoUrl)
+  .connect(config.MONGODB_URI)
   .then(() => {
     logger.info('connected to MongoDB');
   })
