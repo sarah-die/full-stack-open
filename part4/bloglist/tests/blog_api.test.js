@@ -22,16 +22,19 @@ test('blogs are returned as JSON', async () => {
     .expect('Content-Type', /application\/json/);
 });
 
+// 4.8
 test('right amount of blogs is returned', async () => {
   const response = await api.get('/api/blogs');
   expect(response.body).toHaveLength(helper.initialBlogs.length);
 });
 
+// 4.9
 test('unique identifier is named id and exists', async () => {
   const response = await api.get('/api/blogs');
   expect(response.body[0].id).toBeDefined();
 });
 
+// 4.10
 test('a valid blog can be added', async () => {
   const newBlog = {
     title: 'Canonical string reduction',
@@ -52,9 +55,21 @@ test('a valid blog can be added', async () => {
   expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length + 1);
 
   // verify that content is saved correctly to db
-  const contents = blogsAtEnd.map((b) => b);
-  console.log('contents', contents);
-  expect(contents[contents.length - 1]).toMatchObject(newBlog);
+  expect(blogsAtEnd[blogsAtEnd.length - 1]).toMatchObject(newBlog);
+});
+
+// 4.11*
+test('if likes property is missing from the request, it wil default to value 0', async () => {
+  const newBlog = {
+    title: 'First class tests',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+  };
+
+  await api.post('/api/blogs').send(newBlog).expect(201);
+
+  const blogsAtEnd = await helper.blogsInDb();
+  expect(blogsAtEnd[blogsAtEnd.length - 1].likes).toBe(0);
 });
 
 afterAll(async () => {
