@@ -1,5 +1,4 @@
 const blogsRouter = require('express').Router();
-const jwt = require('jsonwebtoken');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
@@ -13,13 +12,7 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const body = request.body;
 
-  // check validity from token
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).json({ error: 'token invalid' });
-  }
-
-  const user = await User.findById(decodedToken.id);
+  const user = await User.findById(request.userId);
 
   const blog = new Blog({
     title: body.title,
@@ -38,8 +31,16 @@ blogsRouter.post('/', async (request, response) => {
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id);
-  response.status(204).end();
+  // id des erstellers vom blog
+  const blog = await Blog.findById(request.params.id);
+
+  // compare user-object
+  if (blog.user.toString() === request.userId) {
+    await Blog.findByIdAndRemove(request.params.id);
+    response.status(204).end();
+  } else {
+    response.status(403).json({ error: 'unauthorized' });
+  }
 });
 
 blogsRouter.put('/:id', async (request, response) => {
