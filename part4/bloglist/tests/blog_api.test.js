@@ -5,13 +5,31 @@ const app = require('../app');
 
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user');
+
+let token = '';
 
 beforeEach(async () => {
   await Blog.deleteMany({});
+  await User.deleteMany({});
+
+  await api.post('/api/users').send(helper.testUser).expect(201);
+
+  const login = await api
+    .post('/api/login')
+    .send({
+      username: helper.testUser.username,
+      password: helper.testUser.password,
+    })
+    .expect(200);
+
+  token = login.body.token;
 
   for (let blog of helper.initialBlogs) {
-    let blogObject = new Blog(blog);
-    await blogObject.save();
+    await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(blog);
   }
 });
 
@@ -46,6 +64,7 @@ test('a valid blog can be added', async () => {
   // verify that content is saved correctly to db
   await api
     .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
     .send(newBlog)
     .expect(201)
     .expect('Content-Type', /application\/json/);
@@ -66,7 +85,11 @@ test('if likes property is missing from the request, it wil default to value 0',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
   };
 
-  await api.post('/api/blogs').send(newBlog).expect(201);
+  await api
+    .post('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
+    .send(newBlog)
+    .expect(201);
 
   const blogsAtEnd = await helper.blogsInDb();
   expect(blogsAtEnd[blogsAtEnd.length - 1].likes).toBe(0);
@@ -89,13 +112,18 @@ describe('creating new blogs', () => {
   test('does the backend respond with status 400 when title is missing', async () => {
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(missingTitle)
       .expect(400);
     console.log('title', response.status, 'text', response.text);
   });
 
   test('does the backend respond with status 400 when url is missing', async () => {
-    const response = await api.post('/api/blogs').send(missingUrl).expect(400);
+    const response = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(missingUrl)
+      .expect(400);
     console.log('url', response.status, 'text', response.text);
   });
 });
@@ -104,13 +132,18 @@ describe('deleting a blog', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(204);
   });
   test('blog was removed from db', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .set('Authorization', `Bearer ${token}`);
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);

@@ -24,12 +24,17 @@ const tokenExtractor = (request, response, next) => {
       request.token = authorization.replace('Bearer ', '');
 
       // check validity from token
-      const decodedToken = jwt.verify(request.token, process.env.SECRET);
-      if (!decodedToken.id) {
+      try {
+        const decodedToken = jwt.verify(request.token, process.env.SECRET);
+
+        if (!decodedToken.id) {
+          return response.status(401).json({ error: 'token invalid' });
+        }
+
+        request.userId = decodedToken.id;
+      } catch (error) {
         return response.status(401).json({ error: 'token invalid' });
       }
-
-      request.userId = decodedToken.id;
     } else {
       // return to stop following middleware from executing
       return response

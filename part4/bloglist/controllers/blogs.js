@@ -30,8 +30,7 @@ blogsRouter.post('/', userExtractor, async (request, response) => {
   response.status(201).json(savedBlog);
 });
 
-blogsRouter.delete('/:id', async (request, response) => {
-  // id des erstellers vom blog
+blogsRouter.delete('/:id', userExtractor, async (request, response) => {
   const blog = await Blog.findById(request.params.id);
 
   // compare user-object
