@@ -1,6 +1,6 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
-const User = require('../models/user');
+const { userExtractor } = require('../utils/middleware');
 
 // route /api/blogs is defined in app.js
 // here only relative routes need to be defined
@@ -9,10 +9,10 @@ blogsRouter.get('/', async (request, response) => {
   response.json(blogs);
 });
 
-blogsRouter.post('/', async (request, response) => {
+blogsRouter.post('/', userExtractor, async (request, response) => {
   const body = request.body;
 
-  const user = await User.findById(request.userId);
+  const user = request.user;
 
   const blog = new Blog({
     title: body.title,
