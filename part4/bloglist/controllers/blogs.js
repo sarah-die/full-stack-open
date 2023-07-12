@@ -1,6 +1,16 @@
 const blogsRouter = require('express').Router();
+const jwt = require('jsonwebtoken');
 const Blog = require('../models/blog');
 const User = require('../models/user');
+
+// isolate token from header
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '');
+  }
+  return null;
+};
 
 // route /api/blogs is defined in app.js
 // here only relative routes need to be defined
@@ -10,30 +20,30 @@ blogsRouter.get('/', async (request, response) => {
 });
 
 blogsRouter.post('/', async (request, response) => {
-  try {
-    const body = request.body;
+  const body = request.body;
 
-    const users = await User.find({});
-
-    console.log('TADDDDDDDAA', users);
-
-    const blog = new Blog({
-      title: body.title,
-      author: body.author,
-      url: body.url,
-      likes: body.likes,
-      user: users[0].id,
-    });
-
-    const savedBlog = await blog.save();
-
-    users[0].blogs = users[0].blogs.concat(savedBlog._id);
-    await users[0].save();
-
-    response.status(201).json(savedBlog);
-  } catch (error) {
-    response.status(400).json(error.message);
+  // check validity from token
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' });
   }
+
+  const user = await User.findById(decodedToken.id);
+
+  const blog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+    user: user._id,
+  });
+
+  const savedBlog = await blog.save();
+
+  user.blogs = user.blogs.concat(savedBlog._id);
+  await user.save();
+
+  response.status(201).json(savedBlog);
 });
 
 blogsRouter.delete('/:id', async (request, response) => {
