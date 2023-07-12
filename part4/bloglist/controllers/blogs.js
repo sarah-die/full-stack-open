@@ -3,15 +3,6 @@ const jwt = require('jsonwebtoken');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
-// isolate token from header
-const getTokenFrom = (request) => {
-  const authorization = request.get('authorization');
-  if (authorization && authorization.startsWith('Bearer ')) {
-    return authorization.replace('Bearer ', '');
-  }
-  return null;
-};
-
 // route /api/blogs is defined in app.js
 // here only relative routes need to be defined
 blogsRouter.get('/', async (request, response) => {
@@ -23,7 +14,7 @@ blogsRouter.post('/', async (request, response) => {
   const body = request.body;
 
   // check validity from token
-  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET);
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
   if (!decodedToken.id) {
     return response.status(401).json({ error: 'token invalid' });
   }

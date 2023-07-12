@@ -12,6 +12,25 @@ const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' });
 };
 
+// 4.20*
+// middleware to isolate token from header
+const tokenExtractor = (request, response, next) => {
+  const authorization = request.get('authorization');
+
+  if (authorization) {
+    if (authorization && authorization.startsWith('Bearer ')) {
+      request.token = authorization.replace('Bearer ', '');
+    } else {
+      // return to stop following middleware from executing
+      return response
+        .status(401)
+        .json({ error: 'invalid authorization schema' });
+    }
+  }
+
+  next();
+};
+
 const errorHandler = (error, request, response, next) => {
   logger.error(error.message);
 
@@ -30,5 +49,6 @@ const errorHandler = (error, request, response, next) => {
 module.exports = {
   requestLogger,
   unknownEndpoint,
+  tokenExtractor,
   errorHandler,
 };
