@@ -19,7 +19,15 @@ const App = () => {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
+    // const fetchBlogs = async () => {
+    //   const blogs = await blogService.getAll();
+    //   setBlogs(blogs);
+    // };
+    // fetchBlogs();
+    (async () => {
+      const blogs = await blogService.getAll();
+      setBlogs(blogs);
+    })();
   }, []);
 
   useEffect(() => {
@@ -74,10 +82,13 @@ const App = () => {
     try {
       newBlogFormRef.current.toggleVisibility();
       const returnedBlog = await blogService.create(blogObject);
-      setBlogs(blogs.concat(returnedBlog));
+      console.log(returnedBlog);
+      // setBlogs(blogs.concat(returnedBlog)); block created (added to db) -> later blocks fetched from db
       setNotification(
         `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`
       );
+      const blogs = await blogService.getAll();
+      setBlogs(blogs);
     } catch (error) {
       setNotification(error.response.data.error);
     }
@@ -108,7 +119,7 @@ const App = () => {
       <div>{user.username} logged in</div>
       <button onClick={handleLogout}>logout</button>
       <Togglable buttonLabel="create Blog" ref={newBlogFormRef}>
-        <NewBlogForm createBlog={createBlog} />
+        <NewBlogForm createBlog={createBlog} creator={user.username} />
       </Togglable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
