@@ -1,5 +1,5 @@
-import axios from "axios";
-const baseUrl = "/api/blogs";
+import axios from 'axios';
+const baseUrl = '/api/blogs';
 
 let token = null;
 
@@ -32,5 +32,4 @@ const deleteBlog = async (blogId) => {
   return response.data;
 };
 
-// eslint-disable-next-line import/no-anonymous-default-export
 export default { setToken, getAll, create, update, deleteBlog };

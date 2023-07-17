@@ -1,20 +1,20 @@
-import { useState, useEffect, useRef } from "react";
-import Blog from "./components/Blog";
-import blogService from "./services/blogs";
-import loginService from "./services/login";
-import LoginForm from "./components/LoginForm";
-import NewBlogForm from "./components/NewBlogForm";
-import Togglable from "./components/Togglable";
+import { useState, useEffect, useRef } from 'react';
+import Blog from './components/Blog';
+import blogService from './services/blogs';
+import loginService from './services/login';
+import LoginForm from './components/LoginForm';
+import NewBlogForm from './components/NewBlogForm';
+import Togglable from './components/Togglable';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
 
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
 
   const [notification, setNotification] = useState(
-    "Notifications appear here."
+    'Notifications appear here.'
   );
   const [isVisible, setIsVisible] = useState(false);
 
@@ -31,7 +31,7 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
+    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
@@ -40,14 +40,14 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    if (notification === "") {
+    if (notification === '') {
       setIsVisible(false);
       return;
     }
     setIsVisible(true);
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setNotification("");
+      setNotification('');
     }, 5000);
     return () => clearTimeout(timer);
   }, [notification]);
@@ -57,11 +57,11 @@ const App = () => {
     try {
       const user = await loginService.login({ username, password });
       blogService.setToken(user.token);
-      window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(user));
+      window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       setUser(user);
       setNotification(`Login successful for user "${username}"`);
-      setUsername("");
-      setPassword("");
+      setUsername('');
+      setPassword('');
     } catch (error) {
       setNotification(error.response.data.error);
     }
@@ -70,8 +70,8 @@ const App = () => {
   const handleLogout = async (event) => {
     event.preventDefault();
     try {
-      window.localStorage.removeItem("loggedBlogAppUser");
-      setNotification(`Logout successful`);
+      window.localStorage.removeItem('loggedBlogAppUser');
+      setNotification('Logout successful');
       setUser(null);
     } catch (error) {
       setNotification(error.response.data.error);
