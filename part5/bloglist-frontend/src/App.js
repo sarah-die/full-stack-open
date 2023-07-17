@@ -78,7 +78,7 @@ const App = () => {
     }
   };
 
-  const handleLike =  (blogId) => async () => {
+  const handleLike = (blogId) => async () => {
     const blogIndex = blogs.findIndex((b) => b.id === blogId);
     const blog = blogs[blogIndex];
     try {
@@ -140,13 +140,11 @@ const App = () => {
       <Togglable buttonLabel="create Blog" ref={newBlogFormRef}>
         <NewBlogForm createBlog={createBlog} creator={user.username} />
       </Togglable>
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          handleLike={handleLike(blog.id)}
-        />
-      ))}
+      {blogs
+        .sort((a, b) => b.likes - a.likes)
+        .map((blog) => (
+          <Blog key={blog.id} blog={blog} handleLike={handleLike(blog.id)} />
+        ))}
     </div>
   );
 };
