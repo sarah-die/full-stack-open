@@ -47,3 +47,33 @@ test('<Blog/> URL and likes are shown when button is clicked', async () => {
   expect(div).toHaveTextContent('test url');
   expect(div).toHaveTextContent('25');
 });
+
+test('likes increase by two is like button is clicked twice', async () => {
+  const blog = {
+    title: 'test title',
+    author: 'test author',
+    url: 'test url',
+    likes: 25,
+    user: { username: 'test user' },
+  };
+
+  const testUser = {
+    username: 'test user',
+    user: 'test user',
+  };
+
+  const mockHandler = jest.fn();
+
+  render(<Blog blog={blog} user={testUser} handleLike={mockHandler} />);
+
+  const user = userEvent.setup();
+
+  const viewButton = screen.getByText('view');
+  await user.click(viewButton);
+
+  const likeButton = screen.getByText('like');
+  await user.click(likeButton);
+  await user.click(likeButton);
+
+  expect(mockHandler.mock.calls).toHaveLength(2);
+});
