@@ -78,11 +78,30 @@ const App = () => {
     }
   };
 
+  const handleLike =  (blogId) => async () => {
+    const blogIndex = blogs.findIndex((b) => b.id === blogId);
+    const blog = blogs[blogIndex];
+    try {
+      const updatedBlog = {
+        user: blog.user.id,
+        likes: blog.likes + 1,
+        author: blog.author,
+        title: blog.title,
+        url: blog.url,
+      };
+      const returnedBlog = await blogService.update(updatedBlog, blogId);
+      setNotification(`You liked the blog ${returnedBlog.title}`);
+      const blogs = await blogService.getAll();
+      setBlogs(blogs);
+    } catch (error) {
+      setNotification(error.response.data.error);
+    }
+  };
+
   const createBlog = async (blogObject) => {
     try {
       newBlogFormRef.current.toggleVisibility();
       const returnedBlog = await blogService.create(blogObject);
-      console.log(returnedBlog);
       // setBlogs(blogs.concat(returnedBlog)); block created (added to db) -> later blocks fetched from db
       setNotification(
         `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`
@@ -122,7 +141,11 @@ const App = () => {
         <NewBlogForm createBlog={createBlog} creator={user.username} />
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleLike={handleLike(blog.id)}
+        />
       ))}
     </div>
   );
