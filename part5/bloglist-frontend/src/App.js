@@ -98,6 +98,25 @@ const App = () => {
     }
   };
 
+  // 5.11
+  const handleDelete = (blogId) => async () => {
+    const blogIndex = blogs.findIndex((b) => b.id === blogId);
+    const blog = blogs[blogIndex];
+    const confirm = window.confirm(
+      `Remove blog ${blog.title} by ${blog.author}?`
+    );
+    if (confirm) {
+      try {
+        await blogService.deleteBlog(blogId);
+        setNotification(`Blog ${blog.title} deleted`);
+        const blogs = await blogService.getAll();
+        setBlogs(blogs);
+      } catch (error) {
+        setNotification(error.response.data.error);
+      }
+    }
+  };
+
   const createBlog = async (blogObject) => {
     try {
       newBlogFormRef.current.toggleVisibility();
@@ -143,7 +162,13 @@ const App = () => {
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog key={blog.id} blog={blog} handleLike={handleLike(blog.id)} />
+          <Blog
+            key={blog.id}
+            blog={blog}
+            handleLike={handleLike(blog.id)}
+            handleDelete={handleDelete(blog.id)}
+            user={user}
+          />
         ))}
     </div>
   );
