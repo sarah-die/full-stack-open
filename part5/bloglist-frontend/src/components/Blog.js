@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 const Blog = ({ blog, handleLike, handleDelete, user }) => {
-  const [isVisible, setIsVisible] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   const blogStyle = {
     paddingTop: 10,
@@ -11,7 +11,7 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
     marginBottom: 5,
   };
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className="blogElement">
       <div>
         {blog.title} {blog.author}
       </div>
