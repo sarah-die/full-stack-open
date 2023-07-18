@@ -155,7 +155,9 @@ const App = () => {
       <h2>blogs</h2>
       {isVisible && <div className="error">{notification}</div>}
       <div>{user.username} logged in</div>
-      <button onClick={handleLogout}>logout</button>
+      <button id="logout-button" onClick={handleLogout}>
+        logout
+      </button>
       <Togglable buttonLabel="create Blog" ref={newBlogFormRef}>
         <NewBlogForm createBlog={createBlog} creator={user.username} />
       </Togglable>

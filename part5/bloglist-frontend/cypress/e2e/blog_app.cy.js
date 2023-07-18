@@ -9,6 +9,13 @@ describe('Blog app', function () {
     };
     cy.request('POST', 'http://localhost:3003/api/users', user);
 
+    const secondUser = {
+      name: 'testuser2',
+      username: 'testuser2',
+      password: 'password',
+    };
+    cy.request('POST', 'http://localhost:3003/api/users', secondUser);
+
     cy.visit('http://localhost:3000');
   });
 
@@ -77,6 +84,29 @@ describe('Blog app', function () {
         cy.get('#view-button').click();
         cy.get('#delete-button').click();
         cy.get('Ursula Poznanski').should('not.exist');
+      });
+    });
+
+    describe('and a blog by different user exists', function () {
+      beforeEach(function () {
+        cy.contains('create Blog').click();
+
+        cy.get('#title').type('Erebos');
+        cy.get('#author').type('Ursula Poznanski');
+        cy.get('#url').type('www.ere.bos');
+
+        cy.get('#create-blog-button').click();
+
+        cy.get('#logout-button').click();
+
+        cy.get('#username').type('testuser2');
+        cy.get('#password').type('password');
+        cy.get('#login-button').click();
+      });
+
+      it('it can only be deleted by the creator', function () {
+        cy.get('#view-button').click();
+        cy.get('#delete-button').should('not.exist');
       });
     });
   });
