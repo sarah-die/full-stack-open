@@ -72,6 +72,12 @@ describe('Blog app', function () {
         cy.get('#like-button').click();
         cy.contains('likes 1');
       });
+
+      it('it can be deleted by the user who created it', function () {
+        cy.get('#view-button').click();
+        cy.get('#delete-button').click();
+        cy.get('Ursula Poznanski').should('not.exist');
+      });
     });
   });
 });

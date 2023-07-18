@@ -36,6 +36,7 @@ const Blog = ({ blog, handleLike, handleDelete, user }) => {
           <div>{blog.user.username}</div>
           {blog.user.username === user.username ? (
             <button
+              id="delete-button"
               style={{ backgroundColor: 'lightblue' }}
               onClick={handleDelete}
             >
