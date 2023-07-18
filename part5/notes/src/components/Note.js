@@ -4,7 +4,7 @@ const Note = ({ note, toggleImportance }) => {
   // classname can be used to access the component in tests
   return (
     <li className="note">
-      {note.content}
+      <span>{note.content}</span>
       <button onClick={toggleImportance}>{label}</button>
     </li>
   );
