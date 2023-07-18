@@ -35,4 +35,25 @@ describe('Blog app', function () {
       cy.contains('invalid username or password');
     });
   });
+
+  describe('When logged in', function () {
+    beforeEach(function () {
+      cy.get('#username').type('testuser');
+      cy.get('#password').type('password');
+      cy.get('#login-button').click();
+    });
+
+    it('A blog can be created', function () {
+      cy.contains('create Blog').click();
+
+      cy.get('#title').type('Erebos');
+      cy.get('#author').type('Ursula Poznanski');
+      cy.get('#url').type('www.ere.bos');
+
+      cy.get('#create-blog-button').click();
+
+      cy.contains('A new blog Erebos by Ursula Poznanski added');
+      cy.contains('Ursula Poznanski');
+    });
+  });
 });
