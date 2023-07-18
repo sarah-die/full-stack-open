@@ -1,22 +1,22 @@
 describe('Blog app', function () {
   beforeEach(function () {
-    cy.request('POST', 'http://localhost:3003/api/testing/reset');
+    cy.request('POST', `${Cypress.env('BACKEND')}/testing/reset`);
 
     const user = {
       name: 'testuser',
       username: 'testuser',
       password: 'password',
     };
-    cy.request('POST', 'http://localhost:3003/api/users', user);
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, user);
 
     const secondUser = {
       name: 'testuser2',
       username: 'testuser2',
       password: 'password',
     };
-    cy.request('POST', 'http://localhost:3003/api/users', secondUser);
+    cy.request('POST', `${Cypress.env('BACKEND')}/users`, secondUser);
 
-    cy.visit('http://localhost:3000');
+    cy.visit('');
   });
 
   it('Login form is shown', function () {
@@ -45,9 +45,7 @@ describe('Blog app', function () {
 
   describe('When logged in', function () {
     beforeEach(function () {
-      cy.get('#username').type('testuser');
-      cy.get('#password').type('password');
-      cy.get('#login-button').click();
+      cy.login({ username: 'testuser', password: 'password' });
     });
 
     it('A blog can be created', function () {
@@ -87,7 +85,7 @@ describe('Blog app', function () {
       });
     });
 
-    describe('and a blog by different user exists', function () {
+    describe('and a blog by a different user exists', function () {
       beforeEach(function () {
         cy.contains('create Blog').click();
 
@@ -99,9 +97,7 @@ describe('Blog app', function () {
 
         cy.get('#logout-button').click();
 
-        cy.get('#username').type('testuser2');
-        cy.get('#password').type('password');
-        cy.get('#login-button').click();
+        cy.login({ username: 'testuser2', password: 'password' });
       });
 
       it('it can only be deleted by the creator', function () {
