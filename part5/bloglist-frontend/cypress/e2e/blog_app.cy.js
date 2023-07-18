@@ -55,5 +55,23 @@ describe('Blog app', function () {
       cy.contains('A new blog Erebos by Ursula Poznanski added');
       cy.contains('Ursula Poznanski');
     });
+
+    describe('and a blog exists', function () {
+      beforeEach(function () {
+        cy.contains('create Blog').click();
+
+        cy.get('#title').type('Erebos');
+        cy.get('#author').type('Ursula Poznanski');
+        cy.get('#url').type('www.ere.bos');
+
+        cy.get('#create-blog-button').click();
+      });
+
+      it('it can be liked by the user', function () {
+        cy.get('#view-button').click();
+        cy.get('#like-button').click();
+        cy.contains('likes 1');
+      });
+    });
   });
 });
