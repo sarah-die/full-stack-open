@@ -2,30 +2,22 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { createStore } from "redux";
-import reducer from "./reducer";
+import reducer, {toggleBad, toggleGood, toggleOk, toggleReset} from "./reducer";
 
 const store = createStore(reducer);
 
 const App = () => {
   const good = () => {
-    store.dispatch({
-      type: "GOOD",
-    });
+    store.dispatch(toggleGood());
   };
   const ok = () => {
-    store.dispatch({
-      type: "OK",
-    });
+    store.dispatch(toggleOk());
   };
   const bad = () => {
-    store.dispatch({
-      type: "BAD",
-    });
+    store.dispatch(toggleBad());
   };
   const reset = () => {
-    store.dispatch({
-      type: "ZERO",
-    });
+    store.dispatch(toggleReset());
   };
 
   return (

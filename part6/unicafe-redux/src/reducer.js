@@ -38,7 +38,7 @@ export const toggleBad = () => {
   };
 };
 
-export const reset = () => {
+export const toggleReset = () => {
   return {
     type: "ZERO",
   };
