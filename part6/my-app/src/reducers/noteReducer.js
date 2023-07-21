@@ -1,3 +1,6 @@
+// a reducer must be a pure function
+// A reducer state must be composed of immutable objects
+// (= If there is a change in the state, the old object is not changed, but it is replaced with a new, changed, object)
 const noteReducer = (state = [], action) => {
   switch (action.type) {
     case "NEW_NOTE":
@@ -19,6 +22,8 @@ const noteReducer = (state = [], action) => {
 
 const generateId = () => Number((Math.random() * 1000000).toFixed(0));
 
+// React components don't need to know the Redux actions types and forms -> can be separated
+// action creator = functions that create actions
 export const createNote = (content) => {
   return {
     type: "NEW_NOTE",
@@ -37,4 +42,5 @@ export const toggleImportanceOf = (id) => {
   };
 };
 
+// noteReducer as defautl export/ action creator as normal export
 export default noteReducer;
