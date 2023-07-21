@@ -36,7 +36,7 @@ const reducer = (state = initialState, action) => {
       );
     }
     case "NEW_ANECDOTE":
-      return state;
+      return [...state, action.payload];
     default:
       return state;
   }
