@@ -18,7 +18,17 @@ const Note = ({ note, handleClick }) => {
 const Notes = () => {
   const dispatch = useDispatch();
   // useSelector hook: access the notes stored in the store
-  const notes = useSelector((state) => state);
+  // const notes = useSelector((state) => state.notes);
+
+  // user filter
+  const notes = useSelector(({ filter, notes }) => {
+    if (filter === "ALL") {
+      return notes;
+    }
+    return filter === "IMPORTANT"
+      ? notes.filter((note) => note.important)
+      : notes.filter((note) => !note.important);
+  });
 
   return (
     <ul>
