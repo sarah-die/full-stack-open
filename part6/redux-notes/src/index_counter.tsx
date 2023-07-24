@@ -26,13 +26,13 @@ const App = () => {
       {/*render value from the counter*/}
       <div>{store.getState()}</div>
       {/*action handlers of buttons dispatch the right actions to the store*/}
-      <button onClick={(e) => store.dispatch({ type: "INCREMENT" })}>
+      <button onClick={() => store.dispatch({ type: "INCREMENT" })}>
         plus
       </button>
-      <button onClick={(e) => store.dispatch({ type: "DECREMENT" })}>
+      <button onClick={() => store.dispatch({ type: "DECREMENT" })}>
         minus
       </button>
-      <button onClick={(e) => store.dispatch({ type: "ZERO" })}>zero</button>
+      <button onClick={() => store.dispatch({ type: "ZERO" })}>zero</button>
     </div>
   );
 };

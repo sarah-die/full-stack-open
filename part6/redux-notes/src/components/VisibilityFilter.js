@@ -1,7 +1,7 @@
 import { filterChange } from "../reducers/filterReducer";
 import { useDispatch } from "react-redux";
 
-const VisibilityFilter = (props) => {
+const VisibilityFilter = () => {
   const dispatch = useDispatch();
 
   // name attribute of all radio buttons is the same -> they form a group where only one option can be selected
