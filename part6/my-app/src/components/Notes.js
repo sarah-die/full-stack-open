@@ -21,6 +21,7 @@ const Notes = () => {
   // const notes = useSelector((state) => state.notes);
 
   // user filter
+  // without destructering state -> state.filter / state.notes
   const notes = useSelector(({ filter, notes }) => {
     if (filter === "ALL") {
       return notes;
