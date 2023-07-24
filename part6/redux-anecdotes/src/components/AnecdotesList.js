@@ -14,7 +14,6 @@ const AnecdotesList = () => {
   });
 
   const vote = (id) => {
-    console.log("vote", id);
     dispatch(voteAnecdote(id));
   };
 
