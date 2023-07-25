@@ -5,7 +5,6 @@ import {
   setNotification,
 } from "../reducers/notificationReducer";
 import { useRef } from "react";
-import anecdoteService from "../services/anecdotes";
 
 const AnecdoteForm = () => {
   const dispatch = useDispatch();
@@ -14,12 +13,13 @@ const AnecdoteForm = () => {
 
   const addAnecdote = async (event) => {
     event.preventDefault();
-    console.log("anecdote created", event.target.anecdote.value);
+
     const content = event.target.anecdote.value;
     event.target.anecdote.value = "";
 
-    const newAnecdote = await anecdoteService.createNew(content);
-    dispatch(createAnecdote(newAnecdote));
+    // now using Thunk
+    // const newAnecdote = await anecdoteService.createNew(content);
+    dispatch(createAnecdote(content));
 
     dispatch(setNotification(`New anecdote: ${content}`));
     if (timeOutRef.current) clearTimeout(timeOutRef.current);
