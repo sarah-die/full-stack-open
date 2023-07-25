@@ -21,14 +21,17 @@ const anecdoteSlice = createSlice({
       state.push(action.payload);
     },
     voteAnecdote(state, action) {
-      const id = action.payload;
-      const anecdoteToVote = state.find((a) => a.id === id);
-      const changedAnecdote = {
-        ...anecdoteToVote,
-        votes: anecdoteToVote.votes + 1,
-      };
+      // const id = action.payload;
+      // const anecdoteToVote = state.find((a) => a.id === id);
+      // const changedAnecdote = {
+      //   ...anecdoteToVote,
+      //   votes: anecdoteToVote.votes + 1,
+      // };
+
+      // 6.18
+      const changedAnecdote = action.payload;
       return state.map((anecdote) =>
-        anecdote.id !== id ? anecdote : changedAnecdote
+        anecdote.id !== changedAnecdote.id ? anecdote : changedAnecdote
       );
     },
     // set multiple anecdotes to redux
@@ -54,6 +57,19 @@ export const createAnecdote = (content) => {
     const newAnecdote = await anecdoteService.createNew(content);
     dispatch(appendAnecdote(newAnecdote));
   };
+};
+
+// 6.18
+export const voteAnecdoteThunk = (id) => async (dispatch, getState) => {
+  const state = getState();
+  const anecdoteToVote = state.anecdotes.find((a) => a.id === id);
+  const changedAnecdote = {
+    ...anecdoteToVote,
+    votes: anecdoteToVote.votes + 1,
+  };
+
+  const updatedAnecdote = await anecdoteService.update(changedAnecdote, id);
+  dispatch(voteAnecdote(updatedAnecdote));
 };
 
 export default anecdoteSlice.reducer;
