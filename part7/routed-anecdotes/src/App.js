@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, Route, Routes, useMatch } from "react-router-dom";
+import { useRef, useState } from "react";
+import { Link, Route, Routes, useMatch, useNavigate } from "react-router-dom";
 
 const Menu = () => {
   const padding = {
@@ -26,9 +26,9 @@ const Anecdote = ({ anecdote }) => {
       <h2>
         {anecdote.content} by {anecdote.author}
       </h2>
-      <di>
+      <div>
         has <strong>{anecdote.votes}</strong> votes
-      </di>
+      </div>
       <div style={{ paddingBottom: 15 }}>
         For more info see <a href={anecdote.info}>{anecdote.info}</a>
       </div>
@@ -83,6 +83,8 @@ const Footer = () => (
 );
 
 const CreateNew = (props) => {
+  const navigate = useNavigate();
+
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("");
   const [info, setInfo] = useState("");
@@ -95,6 +97,7 @@ const CreateNew = (props) => {
       info,
       votes: 0,
     });
+    navigate("/");
   };
 
   return (
@@ -150,10 +153,17 @@ const App = () => {
   ]);
 
   const [notification, setNotification] = useState("");
+  const timeOutRef = useRef();
 
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000);
     setAnecdotes(anecdotes.concat(anecdote));
+
+    setNotification(`A new anecdote "${anecdote.content}" created!`);
+    if (timeOutRef.current) clearTimeout(timeOutRef.current);
+    timeOutRef.current = setTimeout(() => {
+      setNotification("");
+    }, 5000);
   };
 
   const match = useMatch("/anecdotes/:id");
@@ -179,6 +189,7 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      {notification === "" ? <></> : <div>{notification}</div>}
       <Routes>
         <Route path="/" element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path="/create" element={<CreateNew addNew={addNew} />} />
