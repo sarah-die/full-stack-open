@@ -1,18 +1,18 @@
 import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
-import { useQuery, useQueryClient } from "react-query";
+import { useQuery } from "react-query";
 import { getAnecdotes } from "./requests";
 
 const App = () => {
-  const queryClient = useQueryClient();
-
   const handleVote = (anecdote) => {
     console.log("vote");
   };
 
+  // 6.20
   const result = useQuery("anecdotes", getAnecdotes, { retry: false });
   console.log(result);
 
+  // or: result.isError
   if (result.status === "error") {
     return <div>Anecdote service not available due to problems in server</div>;
   }
