@@ -2,9 +2,12 @@ import AnecdoteForm from "./components/AnecdoteForm";
 import Notification from "./components/Notification";
 import { useMutation, useQuery, useQueryClient } from "react-query";
 import { getAnecdotes, updateAnecdote } from "./requests";
+import { useNotificationDispatch } from "./NotificationContext";
+import { useRef } from "react";
 
 const App = () => {
   const queryClient = useQueryClient();
+  const dispatch = useNotificationDispatch();
 
   // 6.22
   const updateAnecdoteMutation = useMutation(updateAnecdote, {
@@ -13,7 +16,15 @@ const App = () => {
     },
   });
 
+  const timeOutRef = useRef();
+
   const handleVote = (anecdote) => {
+    if (timeOutRef.current) clearTimeout(timeOutRef.current);
+    timeOutRef.current = setTimeout(() => {
+      dispatch({ type: "REMOVE" });
+    }, 5000);
+
+    dispatch({ type: "VOTE", payload: anecdote.content });
     updateAnecdoteMutation.mutate({ ...anecdote, votes: anecdote.votes + 1 });
     console.log("vote");
   };

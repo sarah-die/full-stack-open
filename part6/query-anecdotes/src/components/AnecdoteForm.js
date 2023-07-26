@@ -1,8 +1,13 @@
 import { useMutation, useQueryClient } from "react-query";
 import { createAnecdote } from "../requests";
+import {
+  useNotificationDispatch,
+} from "../NotificationContext";
+import {useRef} from "react";
 
 const AnecdoteForm = () => {
   const queryClient = useQueryClient();
+  const dispatch = useNotificationDispatch();
 
   // 6.21
   const newAnecdoteMutation = useMutation(createAnecdote, {
@@ -12,8 +17,20 @@ const AnecdoteForm = () => {
     },
   });
 
+  const timeOutRef = useRef();
+
   const onCreate = (event) => {
     event.preventDefault();
+
+    if (timeOutRef.current) clearTimeout(timeOutRef.current);
+    timeOutRef.current = setTimeout(() => {
+      dispatch({ type: "REMOVE" });
+    }, 5000);
+
+    dispatch({
+      type: "CREATE",
+      payload: event.target.anecdote.value,
+    });
     const content = event.target.anecdote.value;
     event.target.anecdote.value = "";
     console.log("new anecdote");
