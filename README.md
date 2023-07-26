@@ -50,7 +50,7 @@ Learn React, Redux, Node.js, MongoDB, GraphQL, TypeScript, React Native, GitHub 
 - Flux-architecture and Redux
 - Many reducers
 - Communicating with server in a redux application
-- Connect
+- React Query, useReducer and the context
 
 ### [Part 7 - React router, custom hooks, styling app with CSS and webpack](https://fullstackopen.com/en/part7)
 
