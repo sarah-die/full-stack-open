@@ -5,8 +5,11 @@ import loginService from './services/login';
 import LoginForm from './components/LoginForm';
 import NewBlogForm from './components/NewBlogForm';
 import Togglable from './components/Togglable';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 
 const App = () => {
+  const queryClient = useQueryClient();
+
   const [blogs, setBlogs] = useState([]);
 
   const [username, setUsername] = useState('');
@@ -18,17 +21,24 @@ const App = () => {
   );
   const [isVisible, setIsVisible] = useState(false);
 
-  useEffect(() => {
-    // const fetchBlogs = async () => {
-    //   const blogs = await blogService.getAll();
-    //   setBlogs(blogs);
-    // };
-    // fetchBlogs();
-    (async () => {
-      const blogs = await blogService.getAll();
-      setBlogs(blogs);
-    })();
-  }, []);
+  const newBlogMutation = useMutation(blogService.create, {
+    onSuccess: (newBlog) => {
+      const blogs2 = queryClient.getQueryData('blogs');
+      queryClient.setQueryData('blogs', blogs2.concat(newBlog));
+    },
+  });
+
+  // useEffect(() => {
+  //   // const fetchBlogs = async () => {
+  //   //   const blogs = await blogService.getAll();
+  //   //   setBlogs(blogs);
+  //   // };
+  //   // fetchBlogs();
+  //   (async () => {
+  //     const blogs = await blogService.getAll();
+  //     setBlogs(blogs);
+  //   })();
+  // }, []);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
@@ -78,6 +88,19 @@ const App = () => {
     }
   };
 
+  const createBlog = async (blogObject) => {
+    try {
+      newBlogFormRef.current.toggleVisibility();
+      newBlogMutation.mutate(blogObject);
+      setNotification(
+        `A new blog ${blogObject.title} by ${blogObject.author} added`
+      );
+    } catch (error) {
+      setNotification(error.response.data.error);
+    }
+  };
+
+  // ToDo 1
   const handleLike = (blogId) => async () => {
     const blogIndex = blogs.findIndex((b) => b.id === blogId);
     const blog = blogs[blogIndex];
@@ -98,6 +121,7 @@ const App = () => {
     }
   };
 
+  // ToDo 2
   // 5.11
   const handleDelete = (blogId) => async () => {
     const blogIndex = blogs.findIndex((b) => b.id === blogId);
@@ -117,22 +141,19 @@ const App = () => {
     }
   };
 
-  const createBlog = async (blogObject) => {
-    try {
-      newBlogFormRef.current.toggleVisibility();
-      const returnedBlog = await blogService.create(blogObject);
-      // setBlogs(blogs.concat(returnedBlog)); block created (added to db) -> later blocks fetched from db
-      setNotification(
-        `A new blog ${returnedBlog.title} by ${returnedBlog.author} added`
-      );
-      const blogs = await blogService.getAll();
-      setBlogs(blogs);
-    } catch (error) {
-      setNotification(error.response.data.error);
-    }
-  };
-
   const newBlogFormRef = useRef();
+
+  // React Query: fetch all data -> wrap axios call in a query formed with the useQuery function
+  const blogResult = useQuery('blogs', blogService.getAll, {
+    refetchOnWindowFocus: false,
+  });
+  if (blogResult.isLoading) {
+    return <div>loading data ...</div>;
+  }
+  // .data is neccessary -> useQuery returns an object (status, data, ...)
+  // const { isLoading, isFetching, error, data, status } = useQuery();
+  const blogsTemp = blogResult.data;
+  console.log(blogsTemp);
 
   if (user === null) {
     return (
@@ -161,7 +182,7 @@ const App = () => {
       <Togglable buttonLabel="create Blog" ref={newBlogFormRef}>
         <NewBlogForm createBlog={createBlog} creator={user.username} />
       </Togglable>
-      {blogs
+      {blogsTemp
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
           <Blog
