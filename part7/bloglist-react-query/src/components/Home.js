@@ -1,14 +1,14 @@
 import Togglable from './Togglable';
 import NewBlogForm from './NewBlogForm';
-import Blog from './Blog';
 import { useGetBlogs } from '../hooks/useGetBlogs';
 import { useGetUser } from '../hooks/useGetUser';
+import { Link } from 'react-router-dom';
 
 export const Home = ({
   createBlog,
   newBlogFormRef,
-  handleLike,
-  handleDelete,
+  // handleLike,
+  // handleDelete,
 }) => {
   const { data: blogs } = useGetBlogs();
   const { data: user } = useGetUser();
@@ -22,13 +22,12 @@ export const Home = ({
       {blogs
         .sort((a, b) => b.likes - a.likes)
         .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleLike={handleLike(blog.id)}
-            handleDelete={handleDelete(blog.id)}
-            user={user}
-          />
+          <div key={blog.id}>
+            <Link to={`/blogs/${blog.id}`}>
+              {blog.title} by {blog.author}
+            </Link>
+            <br />
+          </div>
         ))}
     </div>
   );

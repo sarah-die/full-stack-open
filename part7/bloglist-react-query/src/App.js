@@ -12,6 +12,7 @@ import { Menu } from './components/Menu';
 import { useGetUser } from './hooks/useGetUser';
 import { useGetBlogs } from './hooks/useGetBlogs';
 import { User } from './components/User';
+import Blog from './components/Blog';
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -167,6 +168,10 @@ const App = () => {
         />
         <Route path="/users" element={<UserInfo />} />
         <Route path="/users/:id" element={<User />} />
+        <Route
+          path="/blogs/:id"
+          element={<Blog handleLike={handleLike} handleDelete={handleDelete} />}
+        />
       </Routes>
     </div>
   );

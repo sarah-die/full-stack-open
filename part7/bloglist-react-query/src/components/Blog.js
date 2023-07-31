@@ -1,52 +1,42 @@
-import { useState } from 'react';
+import { useGetUser } from '../hooks/useGetUser';
+import { useParams } from 'react-router-dom';
+import { useGetBlogs } from '../hooks/useGetBlogs';
 
-const Blog = ({ blog, handleLike, handleDelete, user }) => {
-  const [isVisible, setIsVisible] = useState(false);
+const Blog = ({ handleLike, handleDelete }) => {
+  const { data: user } = useGetUser();
+  const { data: blogs, isLoading: isBlogsLoading } = useGetBlogs();
+  const { id: blogId } = useParams();
 
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  };
+  if (isBlogsLoading) return <div>Is loading...</div>;
+
+  const blog = blogs.find((b) => b.id === blogId);
+
   return (
-    <div style={blogStyle} className="blogElement">
-      <div>
+    <div className="blogElement">
+      <h2>
         {blog.title} {blog.author}
-      </div>
-      {isVisible ? (
-        <button id="view-button" onClick={() => setIsVisible(!isVisible)}>
-          hide
-        </button>
-      ) : (
-        <button id="view-button" onClick={() => setIsVisible(!isVisible)}>
-          view
-        </button>
-      )}
-      {isVisible && (
+      </h2>
+      <div>
+        <div>{blog.url}</div>
         <div>
-          <div>{blog.url}</div>
-          <div>
-            <div className="likesElement">likes {blog.likes}</div>
-            <button id="like-button" onClick={handleLike}>
-              like
-            </button>
-          </div>
-          <div>{blog.user.username}</div>
-          {blog.user.username === user.username ? (
-            <button
-              id="delete-button"
-              style={{ backgroundColor: 'lightblue' }}
-              onClick={handleDelete}
-            >
-              delete
-            </button>
-          ) : (
-            <></>
-          )}
+          <div className="likesElement">likes {blog.likes}</div>
+          <button id="like-button" onClick={handleLike}>
+            like
+          </button>
         </div>
-      )}
+        <div>added by {blog.user.username}</div>
+        {blog.user.username === user.username ? (
+          <button
+            id="delete-button"
+            style={{ backgroundColor: 'lightblue' }}
+            onClick={handleDelete}
+          >
+            delete
+          </button>
+        ) : (
+          <></>
+        )}
+      </div>
     </div>
   );
 };
