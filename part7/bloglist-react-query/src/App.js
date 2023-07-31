@@ -1,13 +1,16 @@
 import { useState, useRef } from 'react';
-import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import LoginForm from './components/LoginForm';
-import NewBlogForm from './components/NewBlogForm';
-import Togglable from './components/Togglable';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useNotificationDispatch } from './NotificationContext';
 import Notification from './components/Notification';
+import { Home } from './components/Home';
+import { Route, Routes } from 'react-router-dom';
+import { UserInfo } from './components/UserInfo';
+import { Menu } from './components/Menu';
+import { useGetUser } from './hooks/useGetUser';
+import { useGetBlogs } from './hooks/useGetBlogs';
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -16,40 +19,31 @@ const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  // login-logic
-  const checkLoggedUser = () => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON);
-      blogService.setToken(user.token);
-      return loggedUserJSON;
-    }
-    return null;
-  };
-
-  const { data: userTemp } = useQuery('user', () => checkLoggedUser, {
-    refetchOnWindowFocus: false,
-  });
-  console.log('this is the logged user: ', userTemp);
+  const { data: user } = useGetUser();
+  console.log('this is the logged user: ', user);
 
   const loginMutation = useMutation(loginService.login, {
     onSuccess: (user) => {
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       queryClient.invalidateQueries('user');
+      dispatchNotification(`Login successful for user "${username}"`);
+    },
+    onError: (error) => {
+      dispatchNotification(error.response.data.error);
     },
   });
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    try {
-      loginMutation.mutate({ username, password });
-      dispatchNotification(`Login successful for user "${username}"`);
-      setUsername('');
-      setPassword('');
-    } catch (error) {
-      console.log('error', error);
-      dispatchNotification(error.response.data.error);
-    }
+    loginMutation.mutate(
+      { username, password },
+      {
+        onSuccess: () => {
+          setUsername('');
+          setPassword('');
+        },
+      },
+    );
   };
 
   const handleLogout = async (event) => {
@@ -129,18 +123,13 @@ const App = () => {
 
   const newBlogFormRef = useRef();
 
-  // React Query: fetch all data -> wrap axios call in a query formed with the useQuery function
-  const blogResult = useQuery('blogs', blogService.getAll, {
-    refetchOnWindowFocus: false,
-  });
-  if (blogResult.isLoading) {
+  // const { isLoading, isFetching, error, data, status } = useQuery();
+  const { isLoading: isBlogLoading, data: blogs } = useGetBlogs();
+  if (isBlogLoading) {
     return <div>loading data ...</div>;
   }
-  // .data is neccessary -> useQuery returns an object (status, data, ...)
-  // const { isLoading, isFetching, error, data, status } = useQuery();
-  const blogs = blogResult.data;
 
-  if (userTemp === null) {
+  if (user === null) {
     return (
       <div>
         <h2>Log in to application</h2>
@@ -158,26 +147,25 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
+      <Menu handleLogout={handleLogout} />
+      <h2>Blog App</h2>
       <Notification />
-      <div>{userTemp.username} logged in</div>
-      <button id="logout-button" onClick={handleLogout}>
-        logout
-      </button>
-      <Togglable buttonLabel="create Blog" ref={newBlogFormRef}>
-        <NewBlogForm createBlog={createBlog} creator={userTemp.username} />
-      </Togglable>
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleLike={handleLike(blog.id)}
-            handleDelete={handleDelete(blog.id)}
-            user={userTemp}
-          />
-        ))}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              createBlog={createBlog}
+              newBlogFormRef={newBlogFormRef}
+              user={user}
+              handleLike={handleLike}
+              handleDelete={handleDelete}
+              blogs={blogs}
+            />
+          }
+        />
+        <Route path="/users" element={<UserInfo />} />
+      </Routes>
     </div>
   );
 };
