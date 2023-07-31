@@ -1,6 +1,7 @@
 const blogsRouter = require('express').Router();
 const Blog = require('../models/blog');
 const { userExtractor } = require('../utils/middleware');
+const { isString } = require('lodash');
 
 // route /api/blogs is defined in app.js
 // here only relative routes need to be defined
@@ -47,7 +48,7 @@ blogsRouter.put('/:id', async (request, response) => {
   const body = request.body;
 
   const newBlog = {
-    user: body.user,
+    user: isString(body.user) ? body.user : body.user.id,
     likes: body.likes,
     author: body.author,
     title: body.title,

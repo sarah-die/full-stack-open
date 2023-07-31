@@ -20,8 +20,9 @@ const create = async (newBlog) => {
 };
 
 // 5.9
-const update = async (updatedBlog, blogId) => {
-  const response = await axios.put(`${baseUrl}/${blogId}`, updatedBlog);
+const update = async (updatedBlog) => {
+  console.log('axios: ', `${baseUrl}/${updatedBlog.id}`);
+  const response = await axios.put(`${baseUrl}/${updatedBlog.id}`, updatedBlog);
   return response.data;
 };
 
