@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
@@ -6,17 +6,15 @@ import LoginForm from './components/LoginForm';
 import NewBlogForm from './components/NewBlogForm';
 import Togglable from './components/Togglable';
 import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useNotificationDispatch } from './NotificationContext';
+import Notification from './components/Notification';
 
 const App = () => {
   const queryClient = useQueryClient();
+  const dispatchNotification = useNotificationDispatch();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
-  const [notification, setNotification] = useState(
-    'Notifications appear here.',
-  );
-  const [isVisible, setIsVisible] = useState(false);
 
   // login-logic
   const checkLoggedUser = () => {
@@ -45,11 +43,12 @@ const App = () => {
     event.preventDefault();
     try {
       loginMutation.mutate({ username, password });
-      setNotification(`Login successful for user "${username}"`);
+      dispatchNotification(`Login successful for user "${username}"`);
       setUsername('');
       setPassword('');
     } catch (error) {
-      setNotification(error.response.data.error);
+      console.log('error', error);
+      dispatchNotification(error.response.data.error);
     }
   };
 
@@ -57,26 +56,12 @@ const App = () => {
     event.preventDefault();
     try {
       window.localStorage.removeItem('loggedBlogAppUser');
-      setNotification('Logout successful');
+      dispatchNotification('Logout successful');
       queryClient.invalidateQueries('user');
     } catch (error) {
-      setNotification(error.response.data.error);
+      dispatchNotification(error.response.data.error);
     }
   };
-
-  // notification-logic
-  useEffect(() => {
-    if (notification === '') {
-      setIsVisible(false);
-      return;
-    }
-    setIsVisible(true);
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      setNotification('');
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [notification]);
 
   // blog-logic
   // mutations = create/ update/ delete
@@ -92,11 +77,11 @@ const App = () => {
     try {
       newBlogFormRef.current.toggleVisibility();
       newBlogMutation.mutate(blogObject);
-      setNotification(
+      dispatchNotification(
         `A new blog ${blogObject.title} by ${blogObject.author} added`,
       );
     } catch (error) {
-      setNotification(error.response.data.error);
+      dispatchNotification(error.response.data.error);
     }
   };
 
@@ -114,9 +99,9 @@ const App = () => {
         ...blog,
         likes: blog.likes + 1,
       });
-      setNotification(`You liked the blog ${blog.title}`);
+      dispatchNotification(`You liked the blog ${blog.title}`);
     } catch (error) {
-      setNotification(error.response.data.error);
+      dispatchNotification(error.response.data.error);
     }
   };
 
@@ -135,9 +120,9 @@ const App = () => {
     if (confirm) {
       try {
         deleteBlogMutation.mutate(blogId);
-        setNotification(`Blog ${blog.title} deleted`);
+        dispatchNotification(`Blog ${blog.title} deleted`);
       } catch (error) {
-        setNotification(error.response.data.error);
+        dispatchNotification(error.response.data.error);
       }
     }
   };
@@ -159,7 +144,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
-        {isVisible && <div className="error">{notification}</div>}
+        <Notification />
         <LoginForm
           handleLogin={handleLogin}
           setPassword={setPassword}
@@ -174,7 +159,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
-      {isVisible && <div className="error">{notification}</div>}
+      <Notification />
       <div>{userTemp.username} logged in</div>
       <button id="logout-button" onClick={handleLogout}>
         logout
