@@ -11,6 +11,7 @@ import { UserInfo } from './components/UserInfo';
 import { Menu } from './components/Menu';
 import { useGetUser } from './hooks/useGetUser';
 import { useGetBlogs } from './hooks/useGetBlogs';
+import { User } from './components/User';
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -165,6 +166,7 @@ const App = () => {
           }
         />
         <Route path="/users" element={<UserInfo />} />
+        <Route path="/users/:id" element={<User />} />
       </Routes>
     </div>
   );

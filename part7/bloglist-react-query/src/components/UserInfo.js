@@ -1,4 +1,5 @@
 import { useGetAllUsers } from '../hooks/useGetAllUsers';
+import { Link } from 'react-router-dom';
 
 export const UserInfo = () => {
   const { data: allUsers, isLoading: isUsersLoading } = useGetAllUsers();
@@ -24,7 +25,9 @@ export const UserInfo = () => {
             {allUsers.map((user) => {
               return (
                 <tr key={user.id}>
-                  <td>{user.username}</td>
+                  <td>
+                    <Link to={`/users/${user.id}`}>{user.username}</Link>
+                  </td>
                   <td>{user.blogs.length}</td>
                 </tr>
               );
