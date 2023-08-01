@@ -6,7 +6,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { useNotificationDispatch } from './NotificationContext';
 import Notification from './components/Notification';
 import { Home } from './components/Home';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { UserInfo } from './components/UserInfo';
 import { Menu } from './components/Menu';
 import { useGetUser } from './hooks/useGetUser';
@@ -17,6 +17,7 @@ import Blog from './components/Blog';
 const App = () => {
   const queryClient = useQueryClient();
   const dispatchNotification = useNotificationDispatch();
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -117,6 +118,7 @@ const App = () => {
       try {
         deleteBlogMutation.mutate(blogId);
         dispatchNotification(`Blog ${blog.title} deleted`);
+        navigate('/');
       } catch (error) {
         dispatchNotification(error.response.data.error);
       }

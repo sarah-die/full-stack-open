@@ -26,6 +26,14 @@ const update = async (updatedBlog) => {
   return response.data;
 };
 
+// 7.18
+const addComments = async ({ blogId, comment }) => {
+  console.log('comment inside addcomment (axios): ', comment);
+  const response = await axios.post(`${baseUrl}/${blogId}/comments`, comment);
+  console.log('axios response: ', response);
+  return response.data;
+};
+
 // 5.11
 const deleteBlog = async (blogId) => {
   const config = { headers: { Authorization: token } };
@@ -33,4 +41,4 @@ const deleteBlog = async (blogId) => {
   return response.data;
 };
 
-export default { setToken, getAll, create, update, deleteBlog };
+export default { setToken, getAll, create, update, addComments, deleteBlog };

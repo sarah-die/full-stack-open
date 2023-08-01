@@ -10,6 +10,7 @@ const Blog = ({ handleLike, handleDelete }) => {
   if (isBlogsLoading) return <div>Is loading...</div>;
 
   const blog = blogs.find((b) => b.id === blogId);
+  if (!blog) return null;
 
   return (
     <div className="blogElement">
@@ -20,7 +21,7 @@ const Blog = ({ handleLike, handleDelete }) => {
         <div>{blog.url}</div>
         <div>
           <div className="likesElement">likes {blog.likes}</div>
-          <button id="like-button" onClick={handleLike}>
+          <button id="like-button" onClick={handleLike(blog.id)}>
             like
           </button>
         </div>
@@ -29,13 +30,21 @@ const Blog = ({ handleLike, handleDelete }) => {
           <button
             id="delete-button"
             style={{ backgroundColor: 'lightblue' }}
-            onClick={handleDelete}
+            onClick={handleDelete(blog.id)}
           >
             delete
           </button>
         ) : (
           <></>
         )}
+        <div>
+          <h4>Comments</h4>
+          <ul>
+            {blog.comments.map((c, index) => {
+              return <li key={index}>{c}</li>;
+            })}
+          </ul>
+        </div>
       </div>
     </div>
   );
