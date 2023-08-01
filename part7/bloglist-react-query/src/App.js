@@ -23,7 +23,6 @@ const App = () => {
   const [password, setPassword] = useState('');
 
   const { data: user } = useGetUser();
-  console.log('this is the logged user: ', user);
 
   const loginMutation = useMutation(loginService.login, {
     onSuccess: (user) => {

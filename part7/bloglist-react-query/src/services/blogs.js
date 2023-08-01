@@ -28,9 +28,9 @@ const update = async (updatedBlog) => {
 
 // 7.18
 const addComments = async ({ blogId, comment }) => {
-  console.log('comment inside addcomment (axios): ', comment);
-  const response = await axios.post(`${baseUrl}/${blogId}/comments`, comment);
-  console.log('axios response: ', response);
+  const response = await axios.post(`${baseUrl}/${blogId}/comments`, {
+    comment: comment,
+  });
   return response.data;
 };
 

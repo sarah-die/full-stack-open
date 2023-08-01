@@ -1,8 +1,14 @@
 import { useGetUser } from '../hooks/useGetUser';
 import { useParams } from 'react-router-dom';
 import { useGetBlogs } from '../hooks/useGetBlogs';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+import blogService from '../services/blogs';
 
 const Blog = ({ handleLike, handleDelete }) => {
+  const queryClient = useQueryClient();
+  const [newComment, setNewComment] = useState('');
+
   const { data: user } = useGetUser();
   const { data: blogs, isLoading: isBlogsLoading } = useGetBlogs();
   const { id: blogId } = useParams();
@@ -11,6 +17,18 @@ const Blog = ({ handleLike, handleDelete }) => {
 
   const blog = blogs.find((b) => b.id === blogId);
   if (!blog) return null;
+
+  const updateCommentMutation = useMutation(blogService.addComments, {
+    onSuccess: () => {
+      queryClient.invalidateQueries('blogs');
+    },
+  });
+
+  const addComment = (event) => {
+    event.preventDefault();
+    updateCommentMutation.mutate({ blogId, comment: newComment });
+    setNewComment('');
+  };
 
   return (
     <div className="blogElement">
@@ -39,6 +57,19 @@ const Blog = ({ handleLike, handleDelete }) => {
         )}
         <div>
           <h4>Comments</h4>
+          <form onSubmit={addComment}>
+            <input
+              id="comment"
+              type="text"
+              value={newComment}
+              name="comment"
+              onChange={({ target }) => setNewComment(target.value)}
+              placeholder="add new comment"
+            />
+            <button id="create-comment-button" type="submit">
+              add comment
+            </button>
+          </form>
           <ul>
             {blog.comments.map((c, index) => {
               return <li key={index}>{c}</li>;
