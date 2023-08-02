@@ -8,11 +8,14 @@ import Notification from './components/Notification';
 import { Home } from './components/Home';
 import { Route, Routes, useNavigate } from 'react-router-dom';
 import { UserInfo } from './components/UserInfo';
-import { Menu } from './components/Menu';
+import { CustomMenu } from './components/CustomMenu';
 import { useGetUser } from './hooks/useGetUser';
 import { useGetBlogs } from './hooks/useGetBlogs';
 import { User } from './components/User';
 import Blog from './components/Blog';
+import { Button, Layout } from 'antd';
+
+const { Header, Content, Footer } = Layout;
 
 const App = () => {
   const queryClient = useQueryClient();
@@ -35,8 +38,7 @@ const App = () => {
     },
   });
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async () => {
     loginMutation.mutate(
       { username, password },
       {
@@ -134,47 +136,98 @@ const App = () => {
 
   if (user === null) {
     return (
-      <div>
-        <h2>Log in to application</h2>
-        <Notification />
-        <LoginForm
-          handleLogin={handleLogin}
-          setPassword={setPassword}
-          password={password}
-          setUsername={setUsername}
-          username={username}
-        />
-      </div>
+      <Layout className="layout">
+        <Header
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <div style={{ color: 'white' }}>No user logged in</div>
+        </Header>
+        <Content
+          style={{
+            padding: '0 50px',
+          }}
+        >
+          <div>
+            <h2>Log in to application</h2>
+            <Notification />
+            <LoginForm
+              handleLogin={handleLogin}
+              setPassword={setPassword}
+              password={password}
+              setUsername={setUsername}
+              username={username}
+            />
+          </div>
+        </Content>
+        <Footer
+          style={{
+            textAlign: 'center',
+          }}
+        >
+          Blog App from Full-Stack-Open 2023
+        </Footer>
+      </Layout>
     );
   }
 
   return (
-    <div>
-      <Menu handleLogout={handleLogout} />
-      <h2>Blog App</h2>
-      <Notification />
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Home
-              createBlog={createBlog}
-              newBlogFormRef={newBlogFormRef}
-              user={user}
-              handleLike={handleLike}
-              handleDelete={handleDelete}
-              blogs={blogs}
+    <Layout className="layout">
+      <Header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <CustomMenu handleLogout={handleLogout} />
+        <div style={{ color: 'white' }}>{user.username} logged in</div>
+        <Button id="logout-button" onClick={handleLogout}>
+          logout
+        </Button>
+      </Header>
+      <Content
+        style={{
+          padding: '0 50px',
+        }}
+      >
+        <div>
+          <h2>Blog App</h2>
+          <Notification />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Home
+                  createBlog={createBlog}
+                  newBlogFormRef={newBlogFormRef}
+                  user={user}
+                  handleLike={handleLike}
+                  handleDelete={handleDelete}
+                  blogs={blogs}
+                />
+              }
             />
-          }
-        />
-        <Route path="/users" element={<UserInfo />} />
-        <Route path="/users/:id" element={<User />} />
-        <Route
-          path="/blogs/:id"
-          element={<Blog handleLike={handleLike} handleDelete={handleDelete} />}
-        />
-      </Routes>
-    </div>
+            <Route path="/users" element={<UserInfo />} />
+            <Route path="/users/:id" element={<User />} />
+            <Route
+              path="/blogs/:id"
+              element={
+                <Blog handleLike={handleLike} handleDelete={handleDelete} />
+              }
+            />
+          </Routes>
+        </div>
+      </Content>
+      <Footer
+        style={{
+          textAlign: 'center',
+        }}
+      >
+        Blog App from Full-Stack-Open 2023
+      </Footer>
+    </Layout>
   );
 };
 

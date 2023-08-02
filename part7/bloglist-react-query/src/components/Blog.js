@@ -1,13 +1,14 @@
 import { useGetUser } from '../hooks/useGetUser';
 import { useParams } from 'react-router-dom';
 import { useGetBlogs } from '../hooks/useGetBlogs';
-import { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
 import blogService from '../services/blogs';
+import { Button, Form, Input } from 'antd';
 
 const Blog = ({ handleLike, handleDelete }) => {
   const queryClient = useQueryClient();
-  const [newComment, setNewComment] = useState('');
+  // https://ant.design/components/form#components-form-demo-usewatch
+  const [commentForm] = Form.useForm();
 
   const { data: user } = useGetUser();
   const { data: blogs, isLoading: isBlogsLoading } = useGetBlogs();
@@ -24,10 +25,9 @@ const Blog = ({ handleLike, handleDelete }) => {
     },
   });
 
-  const addComment = (event) => {
-    event.preventDefault();
-    updateCommentMutation.mutate({ blogId, comment: newComment });
-    setNewComment('');
+  const addComment = (fields) => {
+    updateCommentMutation.mutate({ blogId, comment: fields.newComment });
+    commentForm.setFieldValue('newComment', '');
   };
 
   return (
@@ -39,37 +39,46 @@ const Blog = ({ handleLike, handleDelete }) => {
         <div>{blog.url}</div>
         <div>
           <div className="likesElement">likes {blog.likes}</div>
-          <button id="like-button" onClick={handleLike(blog.id)}>
+          <Button id="like-button" onClick={handleLike(blog.id)}>
             like
-          </button>
+          </Button>
         </div>
         <div>added by {blog.user.username}</div>
         {blog.user.username === user.username ? (
-          <button
+          <Button
             id="delete-button"
             style={{ backgroundColor: 'lightblue' }}
             onClick={handleDelete(blog.id)}
           >
             delete
-          </button>
+          </Button>
         ) : (
           <></>
         )}
         <div>
           <h4>Comments</h4>
-          <form onSubmit={addComment}>
-            <input
-              id="comment"
-              type="text"
-              value={newComment}
-              name="comment"
-              onChange={({ target }) => setNewComment(target.value)}
-              placeholder="add new comment"
-            />
-            <button id="create-comment-button" type="submit">
+          {/*controlled Form = kein State*/}
+          <Form
+            form={commentForm}
+            onFinish={addComment}
+            preserve={false}
+            labelCol={{
+              span: 6,
+            }}
+            wrapperCol={{
+              span: 16,
+            }}
+            style={{
+              maxWidth: 600,
+            }}
+          >
+            <Form.Item label="New Comment" name="newComment" shouldUpdate>
+              <Input id="comment" type="text" placeholder="add new comment" />
+            </Form.Item>
+            <Button id="create-comment-button" type="primary" htmlType="submit">
               add comment
-            </button>
-          </form>
+            </Button>
+          </Form>
           <ul>
             {blog.comments.map((c, index) => {
               return <li key={index}>{c}</li>;

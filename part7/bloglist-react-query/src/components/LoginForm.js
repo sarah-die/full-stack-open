@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import { Button, Form, Input } from 'antd';
 
 const LoginForm = ({
   username,
@@ -7,31 +8,56 @@ const LoginForm = ({
   setUsername,
   setPassword,
 }) => (
-  <form onSubmit={handleLogin}>
-    <div>
-      username
-      <input
+  <Form
+    onFinish={handleLogin}
+    labelCol={{
+      span: 4,
+    }}
+    wrapperCol={{
+      span: 16,
+    }}
+    style={{
+      maxWidth: 500,
+    }}
+  >
+    <Form.Item
+      label="Username"
+      name="username"
+      rules={[
+        {
+          required: true,
+          message: 'Please input your username!',
+        },
+      ]}
+    >
+      <Input
         id="username"
         type="text"
         value={username}
-        name="Username"
         onChange={({ target }) => setUsername(target.value)}
       />
-    </div>
-    <div>
-      password
-      <input
+    </Form.Item>
+    <Form.Item
+      label="Password"
+      name="password"
+      rules={[
+        {
+          required: true,
+          message: 'Please input your password!',
+        },
+      ]}
+    >
+      <Input.Password
         id="password"
         type="password"
         value={password}
-        name="Password"
         onChange={({ target }) => setPassword(target.value)}
       />
-    </div>
-    <button id="login-button" type="submit">
+    </Form.Item>
+    <Button id="login-button" type="primary" htmlType="submit">
       login
-    </button>
-  </form>
+    </Button>
+  </Form>
 );
 
 LoginForm.propTypes = {

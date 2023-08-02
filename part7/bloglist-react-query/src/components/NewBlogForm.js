@@ -1,66 +1,48 @@
-import { useState } from 'react';
+import { Button, Form, Input } from 'antd';
 
 // 5.6
 const NewBlogForm = ({ createBlog }) => {
-  const [newBlog, setNewBlog] = useState({ title: '', author: '', url: '' });
+  const [newBlogForm] = Form.useForm();
 
-  const addBlog = (event) => {
-    event.preventDefault();
+  const addBlog = (fields) => {
     createBlog({
-      title: newBlog.title,
-      author: newBlog.author,
-      url: newBlog.url,
+      title: fields.title,
+      author: fields.author,
+      url: fields.url,
     });
 
-    setNewBlog({ title: '', author: '', url: '' });
+    newBlogForm.setFieldsValue({ title: '', author: '', url: '' });
   };
 
   return (
     <div>
       <h2>Create a new Blog</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          title:
-          <input
-            id="title"
-            type="text"
-            value={newBlog.title}
-            name="title"
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, title: target.value })
-            }
-            placeholder="write title here"
-          />
-        </div>
-        <div>
-          author:
-          <input
-            id="author"
-            type="text"
-            value={newBlog.author}
-            name="author"
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, author: target.value })
-            }
-            placeholder="write author here"
-          />
-        </div>
-        <div>
-          url:
-          <input
-            id="url"
-            type="text"
-            value={newBlog.url}
-            name="url"
-            onChange={({ target }) =>
-              setNewBlog({ ...newBlog, url: target.value })
-            }
-            placeholder="write url here"
-          />
-        </div>
-        {/*<input value={newBlog} onChange={handleBlogChange} />*/}
-        <button id="create-blog-button" type="submit">create</button>
-      </form>
+      <Form
+        form={newBlogForm}
+        onFinish={addBlog}
+        labelCol={{
+          span: 4,
+        }}
+        wrapperCol={{
+          span: 16,
+        }}
+        style={{
+          maxWidth: 600,
+        }}
+      >
+        <Form.Item label="Title" name="title">
+          <Input id="title" type="text" placeholder="write title here" />
+        </Form.Item>
+        <Form.Item label="Author" name="author">
+          <Input id="author" type="text" placeholder="write author here" />
+        </Form.Item>
+        <Form.Item label="URL" name="url">
+          <Input id="url" type="text" placeholder="write url here" />
+        </Form.Item>
+        <Button id="create-blog-button" type="primary" htmlType="submit">
+          create
+        </Button>
+      </Form>
     </div>
   );
 };

@@ -3,32 +3,29 @@ import NewBlogForm from './NewBlogForm';
 import { useGetBlogs } from '../hooks/useGetBlogs';
 import { useGetUser } from '../hooks/useGetUser';
 import { Link } from 'react-router-dom';
+import { List } from 'antd';
 
-export const Home = ({
-  createBlog,
-  newBlogFormRef,
-  // handleLike,
-  // handleDelete,
-}) => {
+export const Home = ({ createBlog, newBlogFormRef }) => {
   const { data: blogs } = useGetBlogs();
   const { data: user } = useGetUser();
 
   return (
     <div>
-      <h2>Blogs</h2>
       <Togglable buttonLabel="create Blog" ref={newBlogFormRef}>
         <NewBlogForm createBlog={createBlog} creator={user.username} />
       </Togglable>
-      {blogs
-        .sort((a, b) => b.likes - a.likes)
-        .map((blog) => (
-          <div key={blog.id}>
+      <List
+        header={<h2>Blogs</h2>}
+        dataSource={blogs.slice().sort((a, b) => b.likes - a.likes)}
+        renderItem={(blog) => (
+          <List.Item key={blog.id}>
             <Link to={`/blogs/${blog.id}`}>
               {blog.title} by {blog.author}
             </Link>
             <br />
-          </div>
-        ))}
+          </List.Item>
+        )}
+      ></List>
     </div>
   );
 };
