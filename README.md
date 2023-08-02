@@ -1,8 +1,8 @@
 # Deep Dive Into Modern Web Development
 
-Finished parts are marked with: &check;
+## &check; [Certificate of Completion](https://studies.cs.helsinki.fi/stats/api/certificate/fullstackopen/en/5d73cbf830fdb50449c33193b073c0f3)
 
-## [Full Stack Open 2023](https://fullstackopen.com/en/)
+### [Full Stack Open 2023](https://fullstackopen.com/en/)
 
 Learn React, Redux, Node.js, MongoDB, GraphQL, TypeScript, React Native, GitHub Actions and Docker in one go! This course will introduce you to modern JavaScript-based web development. The main focus is on building single page applications with ReactJS that use REST APIs built with Node.js.
 
@@ -54,7 +54,7 @@ Learn React, Redux, Node.js, MongoDB, GraphQL, TypeScript, React Native, GitHub 
 - Communicating with server in a redux application
 - React Query, useReducer and the context
 
-### [Part 7 - React router, custom hooks, styling app with CSS and webpack](https://fullstackopen.com/en/part7)
+### [Part 7 - React router, custom hooks, styling app with CSS and webpack](https://fullstackopen.com/en/part7) &check;
 
 - React-router
 - Custom hooks
